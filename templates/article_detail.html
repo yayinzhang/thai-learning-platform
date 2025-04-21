@@ -59,7 +59,7 @@
         <span class="thai-text block">{{ article.title }}</span>
         <span>{{ article.chineseTitle }}</span>
       </h1>
-      <p class="opacity-80">{{ article.createdAt.strftime('%Y-%m-%d') }}</p>
+      <p class="opacity-80">{{ article.createdAt[:10] }}</p>
       <p class="mt-2 text-sm text-blue-200">
         原始來源：
         <a href="{{ article.url }}" target="_blank" class="underline">{{ article.url }}</a>
