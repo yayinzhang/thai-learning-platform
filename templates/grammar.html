@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>文法庫</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -57,7 +58,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {% for point in grammar_points %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden grammar-card">
           <div class="p-6">
@@ -100,6 +101,52 @@
           card.style.display = 'none';
         }
       });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const input = document.querySelector('#vocabulary-search');
+      const rows = document.querySelectorAll('.vocabulary-row');
+
+      input.addEventListener('input', function () {
+        const keyword = this.value.toLowerCase();
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          const combinedText = Array.from(cells).map(td => td.innerText.toLowerCase()).join(' ');
+          row.style.display = combinedText.includes(keyword) ? '' : 'none';
+        });
+      });
+
+      const typeButtons = document.querySelectorAll('button[data-type]');
+      typeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const selectedType = button.getAttribute('data-type');
+          typeButtons.forEach(b => b.classList.remove('bg-blue-500', 'text-white'));
+          button.classList.add('bg-blue-500', 'text-white');
+
+          rows.forEach(row => {
+            const rowType = row.getAttribute('data-type');
+            row.style.display = (rowType === selectedType) ? '' : 'none';
+          });
+        });
+      });
+    });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener("click", function () {
+          if (mobileMenu.style.display === "none" || mobileMenu.style.display === "") {
+            mobileMenu.style.display = "block";
+          } else {
+            mobileMenu.style.display = "none";
+          }
+        });
+      }
     });
   </script>
 </body>

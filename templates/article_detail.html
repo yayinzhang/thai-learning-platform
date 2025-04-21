@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ article.title }}｜{{ article.chineseTitle }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -42,10 +43,10 @@
       </div>
     </div>
     <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
-      <a href="#" class="block py-2 tab-btn active-tab px-4" data-tab="articles">文章列表</a>
-      <a href="#" class="block py-2 tab-btn px-4" data-tab="vocabulary">單字庫</a>
-      <a href="#" class="block py-2 tab-btn px-4" data-tab="grammar">文法庫</a>
-      <!-- <a href="#" class="block py-2 tab-btn px-4" data-tab="admin">管理介面</a> -->
+      <a href="/" class="block py-2 px-4 hover:text-blue-600">文章列表</a>
+      <a href="/vocabulary" class="block py-2 px-4 hover:text-blue-600">單字庫</a>
+      <a href="/grammar" class="block py-2 px-4 hover:text-blue-600">文法庫</a>
+      <!-- <a href="#" class="block py-2 px-4 hover:text-blue-600">管理介面</a> -->
     </div>
   </nav>
   
@@ -86,7 +87,7 @@
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4">單字表</h2>
         {% if words %}
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {% for word in words %}
             <div class="bg-white rounded-lg shadow p-4">
               <div class="text-xl font-semibold mb-2 flex flex-wrap items-center space-x-2">
@@ -138,5 +139,21 @@
     </div>
   </div>
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+  
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener("click", function () {
+          if (mobileMenu.style.display === "none" || mobileMenu.style.display === "") {
+            mobileMenu.style.display = "block";
+          } else {
+            mobileMenu.style.display = "none";
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
