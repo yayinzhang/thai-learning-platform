@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ article.title }}｜{{ article.chineseTitle }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans Thai', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .thai-text {
+      font-family: 'Noto Sans Thai', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #13547a 0%, #80d0c7 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 導覽欄 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-bold text-blue-600">泰文學習平台</span>
+          <span class="thai-text text-xl text-blue-400">Thai-Mandarin</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="hover:text-blue-600">文章列表</a>
+          <a href="/vocabulary" class="hover:text-blue-600">單字庫</a>
+          <a href="#" class="tab-btn" data-tab="grammar">文法庫</a>
+          <a href="#" class="tab-btn" data-tab="admin">管理介面</a>
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="#" class="block py-2 tab-btn active-tab px-4" data-tab="articles">文章列表</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="vocabulary">單字庫</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="grammar">文法庫</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="admin">管理介面</a>
+    </div>
+  </nav>
+  
+  <div class="px-4 py-8">
+    <div class="mb-4">
+      <a href="/" class="text-blue-600 hover:underline text-lg">&larr; 返回文章列表</a>
+    </div>
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="gradient-bg p-6 text-white">
+      <h1 class="text-3xl font-bold mb-2">
+        <span class="thai-text block">{{ article.title }}</span>
+        <span>{{ article.chineseTitle }}</span>
+      </h1>
+      <p class="opacity-80">{{ article.createdAt.strftime('%Y-%m-%d') }}</p>
+      <p class="mt-2 text-sm text-blue-200">
+        原始來源：
+        <a href="{{ article.url }}" target="_blank" class="underline">{{ article.url }}</a>
+      </p>
+    </div>
+
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h2 class="text-xl font-semibold mb-4">泰文原文</h2>
+          <div class="thai-text text-gray-800 leading-relaxed whitespace-pre-line">
+            {{ article.content }}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold mb-4">中文翻譯</h2>
+          <div class="text-gray-800 leading-relaxed whitespace-pre-line">
+            {{ article.chineseContent }}
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">單字表</h2>
+        {% if words %}
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for word in words %}
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-xl thai-text font-semibold mb-2">{{ word.thai }}</h3>
+              <p class="text-sm text-gray-500 mb-1">{{ word.type }}</p>
+              <p class="mb-1">中文：{{ word.chinese }}</p>
+              <p class="text-sm text-gray-600">發音：{{ word.pronunciation }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+            尚無單字資料。
+          </div>
+        {% endif %}
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-4">句型與文法</h2>
+        <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+          尚未接上資料，可日後擴充。
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>單字庫</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans Thai', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .thai-text {
+      font-family: 'Noto Sans Thai', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 導覽欄 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-bold text-blue-600">泰文學習平台</span>
+          <span class="thai-text text-xl text-blue-400">Thai-Mandarin</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="hover:text-blue-600">文章列表</a>
+          <a href="/vocabulary" class="hover:text-blue-600">單字庫</a>
+          <a href="#" class="tab-btn" data-tab="grammar">文法庫</a>
+          <a href="#" class="tab-btn" data-tab="admin">管理介面</a>
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="#" class="block py-2 tab-btn active-tab px-4" data-tab="articles">文章列表</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="vocabulary">單字庫</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="grammar">文法庫</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="admin">管理介面</a>
+    </div>
+  </nav>
+  <div class="px-4 py-8">
+  
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">單字庫</h1>
+
+  <!-- 搜尋列與分類按鈕可先保留 -->
+  <div class="mb-6">
+    <div class="flex mb-4">
+      <input type="text" placeholder="搜尋單字..." class="border rounded-l-md px-4" />
+      <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-md">搜尋</button>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full hover:bg-gray-200">名詞</button>
+      <button class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full hover:bg-gray-200">動詞</button>
+      <button class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full hover:bg-gray-200">形容詞</button>
+      <button class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full hover:bg-gray-200">副詞</button>
+      <button class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full hover:bg-gray-200">介係詞</button>
+    </div>
+  </div>
+
+  <!-- 表格區：這裡之後可以改成 Jinja2 + 後端資料 -->
+  <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+    <table class="min-w-full w-full">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase">單字</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase">詞性</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase">中文翻譯</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase">發音</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase">相關文章</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {% for word in words %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap thai-text">{{ word.thai }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ word.type }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ word.chinese }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ word.pronunciation }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            {% if word.articleId %}
+              <a href="/article/{{ word.articleId }}" class="text-blue-500 hover:underline">前往</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

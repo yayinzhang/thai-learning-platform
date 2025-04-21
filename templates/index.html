@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>泰語學習平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans Thai', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .thai-text {
+      font-family: 'Noto Sans Thai', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #13547a 0%, #80d0c7 100%);
+    }
+  </style>
+</head>
+<body>
+  <!-- 導覽欄 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-bold text-blue-600">泰文學習平台</span>
+          <span class="thai-text text-xl text-blue-400">Thai-Mandarin</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="#" class="tab-btn active-tab" data-tab="articles">文章列表</a>
+          <a href="/vocabulary" class="hover:text-blue-600">單字庫</a>
+          <a href="#" class="tab-btn" data-tab="grammar">文法庫</a>
+          <a href="#" class="tab-btn" data-tab="admin">管理介面</a>
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="#" class="block py-2 tab-btn active-tab px-4" data-tab="articles">文章列表</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="vocabulary">單字庫</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="grammar">文法庫</a>
+      <a href="#" class="block py-2 tab-btn px-4" data-tab="admin">管理介面</a>
+    </div>
+  </nav>
+
+<!-- 主要內容區 -->
+<div class="container mx-auto px-4 py-8">
+  <!-- 文章列表頁面 -->
+  <div id="articles" class="tab-content">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-6 text-gray-800">最新文章</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 文章卡片 -->
+        {% for article in articles %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <div class="gradient-bg p-4 text-white h-28 flex flex-col justify-between">
+          <h3 class="text-xl font-semibold leading-snug line-clamp-2 break-words">{{ article.chineseTitle }}</h3>
+          <p class="text-sm opacity-80">{{ article.createdAt.strftime('%Y-%m-%d') }}</p>
+        </div>
+          <div class="p-4">
+            <p class="thai-text mb-3 text-gray-700">{{ article.content[:60] }}...</p>
+            <p class="mb-4 text-gray-600">{{ article.chineseContent[:60] }}...</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">單字: 15 | 句型: 5</span>
+              <a href="/article/{{ article.id }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-md">閱讀原文</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 文法庫頁面 -->
+<div id="grammar" class="tab-content hidden px-4">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">文法庫</h1>
+  <div class="mb-6">
+    <div class="flex mb-4">
+      <input type="text" placeholder="搜尋文法或句型..." class="border rounded-l-md px-4" />
+      <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-md">搜尋</button>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200"></button>
+      <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"></button>
+      <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"></button>
+      <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"></button>
+      <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200"></button>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <!-- 文法項目 1 -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="p-6">
+        <h3 class="text-xl font-semibold mb-3">กำลัง + 動詞 (正在...)</h3>
+        <div class="mb-4">
+          <p class="mb-2 text-gray-700"><span class="font-medium">用法：</span>表示動作正在進行</p>
+          <p class="mb-2 text-gray-700"><span class="font-medium">結構：</span>主詞 + กำลัง + 動詞</p>
+        </div>
+        <div class="mb-4">
+          <h4 class="font-medium mb-2">例句：</h4>
+          <div class="bg-gray-50 p-3 rounded-md mb-2">
+            <p class="thai-text mb-1">ฉันกำลังเรียนภาษาไทย</p>
+            <p>我正在學習泰語</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-md">
+            <p class="thai-text mb-1">เขากำลังทำงานอยู่</p>
+            <p>他正在工作</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <a href="#" class="text-blue-500 hover:underline" onclick="showArticle(3)">相關文章</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文法項目 2 -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="p-6">
+        <h3 class="text-xl font-semibold mb-3">จะ + 動詞 (將要...)</h3>
+        <div class="mb-4">
+          <p class="mb-2 text-gray-700"><span class="font-medium">用法：</span> 表示未來即將發生的動作</p>
+          <p class="mb-2 text-gray-700"><span class="font-medium">結構：</span> 主詞 + จะ + 動詞</p>
+        </div>
+        <div class="mb-4">
+          <h4 class="font-medium mb-2">例句：</h4>
+          <div class="bg-gray-50 p-3 rounded-md mb-2">
+            <p class="thai-text mb-1">ฉันจะไปกรุงเทพฯ</p>
+            <p>我將要去曼谷</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-md">
+            <p class="thai-text mb-1">เขาจะมาถึงพรุ่งนี้</p>
+            <p>他明天將會到達</p>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <a href="#" class="text-blue-500 hover:underline" onclick="showArticle(2)">相關文章</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文法項目 3 -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="p-6">
+        <h3 class="text-xl font-semibold mb-3">ได้ + 動詞 (已經...)</h3>
+        <div class="mb-4">
+          <p class="mb-2 text-gray-700"><span class="font-medium">用法：</span> 表示已完成的動作</p>
+          <p class="mb-2 text-gray-700"><span class="font-medium">結構：</span> 主詞 + ได้ + 動詞</p>
+        </div>
+        <div class="mb-4">
+          <h4 class="font-medium mb-2">例句：</h4>
+          <div class="bg-gray-50 p-3 rounded-md mb-2">
+            <p class="thai-text mb-1">ฉันทานข้าวแล้ว</p>
+            <p>我已經吃過飯了</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-md">
+            <p class="thai-text mb-1">เขาเคยไปเที่ยวญี่ปุ่นแล้ว</p>
+            <p>他已經去過日本旅遊</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <a href="#" class="text-blue-500 hover:underline" onclick="showArticle(1)">相關文章</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 管理介面頁面 -->
+<div id="admin" class="tab-content hidden px-4">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">管理介面</h1>
+  
+  <!-- 新增文章列表區塊 -->
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">文章列表</h2>
+    <ul>
+      <li class="flex justify-between items-center border-b py-2">
+        <span>文章標題 1</span>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md">刪除</button>
+      </li>
+      <li class="flex justify-between items-center border-b py-2">
+        <span>文章標題 2</span>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md">刪除</button>
+      </li>
+    </ul>
+  </div>
+  
+  <!-- 新增文章表單區塊 -->
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">新增文章表單</h2>
+    <div class="mb-4">
+      <label class="block text-gray-700 mb-2">文章標題</label>
+      <input type="text" placeholder="輸入文章標題" class="w-full border rounded-md px-4 py-2" />
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 mb-2">上傳文章</label>
+      <input type="file" class="w-full border rounded-md px-4 py-2" />
+    </div>
+    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">提交</button>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">新增文章</h2>
+    <div class="mb-4">
+      <label class="block text-gray-700 mb-2">泰文新聞網址</label>
+      <input type="url" placeholder="https://..." class="w-full border rounded-md px-4 py-2" />
+    </div>
+    <button id="process-article-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">開始處理</button>
+  </div>
+
+  <div id="processing-steps" class="hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">文章處理流程</h2>
+
+      <div class="relative">
+        <!-- 進度條 -->
+        <div class="h-1 bg-gray-200 absolute top-4 left-6 right-6 z-0"></div>
+        <div class="h-1 bg-blue-500 absolute top-4 left-6 right-6 z-10" style="width: 50%;"></div>
+
+        <!-- 步驟 -->
+        <div class="flex justify-between relative z-10">
+          <div class="text-center">
+            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto">1</div>
+            <p class="mt-2 text-sm">摘要處理</p>
+            <p class="text-xs text-green-600">已完成</p>
+          </div>
+          <div class="text-center">
+            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto">2</div>
+            <p class="mt-2 text-sm">翻譯成中文</p>
+            <p class="text-xs text-green-600">已完成</p>
+          </div>
+          <div class="text-center">
+            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto">3</div>
+            <p class="mt-2 text-sm">整理單字表</p>
+            <p class="text-xs text-blue-600">處理中...</p>
+          </div>
+          <div class="text-center">
+            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mx-auto">4</div>
+            <p class="mt-2 text-sm">分析句型文法</p>
+            <p class="text-xs text-gray-500">等待中</p>
+          </div>
+          <div class="text-center">
+            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mx-auto">5</div>
+            <p class="mt-2 text-sm">整合頁面</p>
+            <p class="text-xs text-gray-500">等待中</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文章預覽 -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">文章預覽</h2>
+        <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">儲存</button>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-2">文章標題</label>
+        <input type="text" value="泰國經濟復甦計劃" class="w-full border rounded-md px-4 py-2" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-medium mb-2">泰文原文</h3>
+          <div class="border rounded-md p-3 thai-text">รัฐบาลไทยประกาศแผนฟื้นฟูเศรษฐกิจหลังโควิด-19 โดยมุ่งเน้นการส่งเสริมการท่องเที่ยวและการลงทุนจากต่างประเทศ</div>
+        </div>
+        <div>
+          <h3 class="font-medium mb-2">中文翻譯</h3>
+          <div class="border rounded-md p-3">泰國政府宣布了後疫情經濟復甦計劃，重點關注促進旅遊業和吸引外國投資。</div>
+        </div>
+      </div>
+      <div class="mt-6">
+        <h3 class="font-medium mb-2">單字表（處理中...）</h3>
+        <div class="border rounded-md p-3">
+          <ul class="space-y-2">
+            <li><span class="thai-text">เศรษฐกิจ</span> (n.) 經濟</li>
+            <li><span class="thai-text">ลงทุน</span> (v.) 投資</li>
+            <li><span class="thai-text">ท่องเที่ยว</span> (n.) 旅遊</li>
+            <li><span class="thai-text">รัฐบาล</span> (n.) 政府</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="font-medium mb-2">句型和文法（等待處理）</h3>
+        <div class="border rounded-md p-3 bg-gray-50 text-gray-500">
+          文章處理完成後將顯示句型和文法分析
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 文章詳情頁面 -->
+<div id="article-detail" class="hidden px-4">
+  <div class="mb-6 flex items-center">
+    <button id="back-to-list" class="flex items-center text-blue-500 hover:text-blue-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L7.414 10l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      返回文章列表
+    </button>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="gradient-bg p-6 text-white">
+      <h1 class="text-3xl font-bold mb-2" id="article-title">泰國總理訪問中國</h1>
+      <p class="opacity-80">2023 年 10 月 15 日</p>
+    </div>
+
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h2 class="text-xl font-semibold mb-4">泰文原文</h2>
+          <div class="thai-text text-gray-800 leading-relaxed" id="article-thai">
+            <p class="mb-4">นายกรัฐมนตรีไทยได้เน้นย้ำถึงความสำคัญของความสัมพันธ์ทางเศรษฐกิจระหว่างไทยกับจีน</p>
+            <p class="mb-4">การเยือนครั้งนี้มีเป้าหมายเพื่อส่งเสริมการลงทุนและการท่องเที่ยวระหว่างสองประเทศ</p>
+            <p class="mb-4">นายกรัฐมนตรีได้พบกับประธานาธิบดีจีนเพื่อหารือเกี่ยวกับความร่วมมือในด้านต่างๆ</p>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold mb-4">中文翻譯</h2>
+          <div class="text-gray-800 leading-relaxed" id="article-chinese">
+            <p class="mb-4">泰國總理於2023年10月15日對中國進行正式訪問，旨在加強兩國之間的合作。</p>
+            <p class="mb-4">此次訪問強調了泰國與中國在經濟、貿易和文化等領域的密切關係。</p>
+            <p>泰國總理強調了兩國在經濟合作方面的重要性，並表示將進一步促進雙邊貿易和投資。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">單字表</h2>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="p-2"><p><span class="thai-text font-medium">เศรษฐกิจ</span> (n.) 經濟</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">ความสัมพันธ์</span> (n.) 關係</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">การท่องเที่ยว</span> (n.) 旅遊</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">การลงทุน</span> (n.) 投資</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">การเยือน</span> (n.) 訪問</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">ประธานาธิบดี</span> (n.) 總統</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">การประชุม</span> (n.) 會議</p></div>
+            <div class="p-2"><p><span class="thai-text font-medium">การร่วมมือ</span> (n.) 合作</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-4">句型和文法</h2>
+        <div class="space-y-4">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="font-medium mb-2">ได้ + 動詞</h3>
+            <p class="mb-2">用法：表示動作已完成</p>
+            <div class="bg-white p-3 rounded-md mt-2">
+              <p class="thai-text mb-1">นายกรัฐมนตรีไทยได้เน้นย้ำ<span class='bg-yellow-100'>ถึง</span>ความสำคัญของความสัมพันธ์ทางเศรษฐกิจ</p>
+              <p>泰國總理<span class="bg-yellow-100">已經</span>強調了重要性...</p>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="font-medium mb-2">จะ + 動詞</h3>
+            <p class="mb-2">用法：表示未來即將發生的動作</p>
+            <div class="bg-white p-3 rounded-md mt-2">
+                <p class="thai-text mb-1">นายกรัฐมนตรีจะ<span class='bg-yellow-100'>ไป</span>จีน</p>
+                <p>總理<span class="bg-yellow-100">將要</span>去中國...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 切換頁籤功能
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const articleDetail = document.getElementById('article-detail');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const processArticleBtn = document.getElementById('process-article-btn');
+    const processingSteps = document.getElementById('processing-steps');
+    const backToListBtn = document.getElementById('back-to-list');
+  
+    // 切換頁籤
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // 移除所有活動狀態
+        tabBtns.forEach(b => b.classList.remove('active-tab', 'text-blue-600', 'font-medium'));
+        tabContents.forEach(c => c.classList.add('hidden'));
+
+        // 設置當前活動頁籤
+        this.classList.add('active-tab', 'text-blue-600', 'font-medium');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.remove('hidden');
+        
+        // 隱藏文章詳情頁面
+        articleDetail.classList.add('hidden');
+        
+        // 關閉行動選單
+        mobileMenu.classList.add('hidden');
+      });
+    });
+  
+    // 行動選單切換
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', function () {
+      mobileMenu.style.display = mobileMenu.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+    
+    // Mobile menu tab button click event
+    document.querySelectorAll('#mobile-menu .tab-btn').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+  
+        tabBtns.forEach(b => b.classList.remove('active-tab', 'text-yellow-600', 'font-medium'));
+        tabContents.forEach(c => c.classList.add('hidden'));
+  
+        this.classList.add('active-tab', 'text-yellow-600', 'font-medium');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.remove('hidden');
+  
+        articleDetail.classList.add('hidden');
+        mobileMenu.classList.add('hidden');
+      });
+    });
+    
+    // 處理文章按鈕
+    if (processArticleBtn) {
+      processArticleBtn.addEventListener('click', function () {
+        processingSteps.classList.remove('hidden');
+      });
+    }
+  
+    // 返回文章列表按鈕
+    if (backToListBtn) {
+      backToListBtn.addEventListener('click', function () {
+        articleDetail.classList.add('hidden');
+        document.getElementById('articles').classList.remove('hidden');
+      });
+    }
+  
+    // 顯示文章詳情
+    function showArticle(id) {
+      // 隱藏所有頁籤內容
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      
+      // 顯示文章詳情
+      document.getElementById('article-detail').classList.remove('hidden');
+      
+      // 根據ID設置文章內容（實際應用中應從後端獲取）
+      if (id === 1) {
+        document.getElementById('article-title').textContent = '泰國總理訪問中國';
+        // 其他內容已在HTML中設置
+      } else if (id === 2) {
+        document.getElementById('article-title').textContent = '曼谷新地鐵線開通';
+        document.getElementById('article-thai').innerHTML = `
+          <p class="mb-4">รถไฟฟ้าสายใหม่ในกรุงเทพฯ เปิดให้บริการอย่างเป็นทางการแล้วเมื่อวันที่ 10 ตุลาคม</p>
+          <p class="mb-4">การเปิดให้บริการรถไฟฟ้าสายนี้จะช่วยบรรเทาปัญหาการจราจรติดขัดในกรุงเทพฯ</p>
+          <p>นายกรัฐมนตรีได้เข้าร่วมพิธีเปิดและกล่าวว่าโครงการนี้เป็นส่วนหนึ่งของแผนพัฒนาโครงสร้างพื้นฐานของประเทศ</p>
+        `;
+        document.getElementById('article-chinese').innerHTML = `
+          <p class="mb-4">曼谷新地鐵線於2023年10月10日正式開通，該線路連接市中心與郊區。</p>
+          <p class="mb-4">這條新地鐵線的開通將有助於緩解曼谷的交通擁堵問題，並為市民提供便利的交通方式。</p>
+          <p>總理出席了開通儀式，並表示該項目是國家基礎設施發展計劃的一部分。</p>
+        `;
+      } else if (id === 3) {
+        document.getElementById('article-title').textContent = '泰國旅遊業復甦';
+        document.getElementById('article-thai').innerHTML = `
+          <p class="mb-4">การท่องเที่ยวไทยกำลังฟื้นตัวอย่างต่อเนื่องหลังจากสถานการณ์โควิด-19</p>
+          <p class="mb-4">กระทรวงการท่องเที่ยวและกีฬารายงานว่า รายได้จากการท่องเที่ยวในปีนี้คาดว่าจะสูงถึง 80%</p>
+          <p>รัฐบาลได้ออกมาตรการส่งเสริมการท่องเที่ยว รวมถึงการ</p>
+        `;
+        document.getElementById('article-chinese').innerHTML = `
+          <p class="mb-4">泰國旅遊業在新冠疫情後持續復甦，過去一個季度外國遊客數量顯著增加。</p>
+          <p class="mb-4">泰國旅遊和體育部報告稱，今年的旅遊收入預計將達到疫情前水平的80%。</p>
+          <p>政府已推出多項促進旅遊業的措施，包括對多個國家的旅客免簽。</p>
+        `;
+      }
+    }
+    
+
+    window.showArticle = showArticle;
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    const closeMobileNav = document.getElementById('close-mobile-nav');
+
+    hamburger.addEventListener('click', () => {
+      mobileNav.classList.remove('hidden');
+    });
+
+    closeMobileNav.addEventListener('click', () => {
+      mobileNav.classList.add('hidden');
+    });
+  });
+</script>
+
+</body>
+</html>
