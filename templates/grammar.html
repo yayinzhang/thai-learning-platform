@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>文法庫</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans Thai', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .thai-text {
+      font-family: 'Noto Sans Thai', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- 導覽欄 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-bold text-blue-600">泰文學習平台</span>
+          <span class="thai-text text-xl text-blue-400">Thai-Mandarin</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="hover:text-blue-600">文章列表</a>
+          <a href="/vocabulary" class="hover:text-blue-600">單字庫</a>
+          <a href="/grammar" class="hover:text-blue-600">文法庫</a>
+          <!-- <a href="#" class="hover:text-blue-600">管理介面</a> -->
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="/" class="block py-2 px-4 hover:text-blue-600">文章列表</a>
+      <a href="/vocabulary" class="block py-2 px-4 hover:text-blue-600">單字庫</a>
+      <a href="/grammar" class="block py-2 px-4 hover:text-blue-600">文法庫</a>
+      <!-- <a href="#" class="block py-2 px-4 hover:text-blue-600">管理介面</a> -->
+    </div>
+  </nav>
+
+  <div class="min-h-screen">
+    <div class="px-4 pt-8 pb-20">
+      <h1 class="text-3xl font-bold mb-6 text-gray-800">文法庫</h1>
+
+      <div class="mb-6">
+        <div class="flex mb-4">
+          <input id="grammar-search" type="text" placeholder="搜尋文法或句型..." class="border rounded-l-md px-4" />
+          <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-md">搜尋</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for point in grammar_points %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden grammar-card">
+          <div class="p-6">
+            <h3 class="text-xl font-semibold mb-3">{{ point.title }}</h3>
+            <div class="mb-4">
+              <p class="mb-2 text-gray-700"><span class="font-medium">用法：</span> {{ point.explanation }}</p>
+            </div>
+            {% if point.examples %}
+            <div class="mb-4">
+              <h4 class="font-medium mb-2">例句：</h4>
+              {% for example in point.examples %}
+              <div class="bg-gray-50 p-3 rounded-md mb-2">
+                <p class="thai-text mb-1">{{ example.thai }}</p>
+                <p>{{ example.chinese }}</p>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if point.articleId %}
+              <div class="text-right mt-2">
+                <a href="/article/{{ point.articleId }}" class="text-blue-500 hover:underline text-sm">相關文章</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="h-16"></div>
+  <script>
+    document.getElementById('grammar-search').addEventListener('input', function () {
+      const keyword = this.value.toLowerCase();
+      document.querySelectorAll('.grammar-card').forEach(card => {
+        const title = card.querySelector('h3').innerText.toLowerCase();
+        const explanation = card.querySelector('p').innerText.toLowerCase();
+        if (title.includes(keyword) || explanation.includes(keyword)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

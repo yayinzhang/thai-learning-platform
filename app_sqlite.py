@@ -37,5 +37,25 @@ def vocabulary():
     conn.close()
     return render_template('vocabulary.html', words=words)
 
+@app.route('/grammar')
+def grammar():
+    conn = get_db_connection()
+    grammar_points = conn.execute('SELECT * FROM GrammarPoint ORDER BY createdAt DESC').fetchall()
+    grammar_data = []
+    for point in grammar_points:
+        examples = conn.execute('SELECT * FROM GrammarExample WHERE grammarPointId = ?', (point['id'],)).fetchall()
+        grammar_data.append({
+            'id': point['id'],
+            'title': point['title'],
+            'explanation': point['explanation'],
+            'examples': examples,
+            'articleId': point['articleId']
+        })
+
+    conn.close()
+    return render_template('grammar.html', grammar_points=grammar_data)
+
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5050)
