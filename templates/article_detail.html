@@ -89,10 +89,14 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for word in words %}
             <div class="bg-white rounded-lg shadow p-4">
-              <h3 class="text-xl thai-text font-semibold mb-2">{{ word.thai }}</h3>
-              <p class="text-sm text-gray-500 mb-1">{{ word.type }}</p>
-              <p class="mb-1">中文：{{ word.chinese }}</p>
-              <p class="text-sm text-gray-600">發音：{{ word.pronunciation }}</p>
+              <div class="text-xl font-semibold mb-2 flex flex-wrap items-center space-x-2">
+                <span class="thai-text">{{ word.thai }}</span>
+              <span class="text-gray-600">- {{ word.chinese }}</span>
+              </div>
+              <div class="flex items-center space-x-2 mb-2">
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">{{ word.type }}</span>
+                <span class="text-sm text-gray-500">[{{ word.pronunciation }}]</span>
+              </div>
             </div>
             {% endfor %}
           </div>
@@ -103,7 +107,7 @@
         {% endif %}
       </div>
 
-      <div>
+      <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4">句型與文法</h2>
         {% if grammars %}
           <div class="space-y-4">

@@ -16,17 +16,50 @@ def get_db_connection():
 def index():
     conn = get_db_connection()
     articles = conn.execute('SELECT * FROM Article ORDER BY createdAt DESC').fetchall()
+    
+    # 加入字數與文法數量查詢
+    article_data = []
+    for article in articles:
+        article_id = article['id']
+        word_count = conn.execute('SELECT COUNT(*) FROM Word WHERE articleId = ?', (article_id,)).fetchone()[0]
+        grammar_count = conn.execute('SELECT COUNT(*) FROM GrammarPoint WHERE articleId = ?', (article_id,)).fetchone()[0]
+        article_data.append({**dict(article), 'wordCount': word_count, 'grammarCount': grammar_count})
+    
     conn.close()
-    return render_template('index.html', articles=articles)
+    return render_template('index.html', articles=article_data)
 
 @app.route('/article/<int:article_id>')
 def article_detail(article_id):
     conn = get_db_connection()
+
     article = conn.execute('SELECT * FROM Article WHERE id = ?', (article_id,)).fetchone()
     words = conn.execute('SELECT * FROM Word WHERE articleId = ?', (article_id,)).fetchall()
+
+    grammar_points = conn.execute(
+        'SELECT * FROM GrammarPoint WHERE articleId = ?', (article_id,)
+    ).fetchall()
+
+    grammars = []
+    for gp in grammar_points:
+        examples = conn.execute(
+            'SELECT * FROM GrammarExample WHERE grammarPointId = ?', (gp['id'],)
+        ).fetchall()
+        grammars.append({
+            'id': gp['id'],
+            'title': gp['title'],
+            'explanation': gp['explanation'],
+            'examples': examples
+        })
+
     conn.close()
+
     if article:
-        return render_template('article_detail.html', article=article, words=words)
+        return render_template(
+            'article_detail.html',
+            article=article,
+            words=words,
+            grammars=grammars
+        )
     else:
         return "文章不存在", 404
 
