@@ -99,4 +99,20 @@
   </ul>
 </div>
 </body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuBtn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
+
+    if (menuBtn && menu) {
+      menuBtn.addEventListener("click", function () {
+        if (menu.style.display === "none" || menu.style.display === "") {
+          menu.style.display = "block";
+        } else {
+          menu.style.display = "none";
+        }
+      });
+    }
+  });
+</script>
 </html>
