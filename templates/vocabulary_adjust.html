@@ -76,8 +76,8 @@
           <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">單字</th>
           <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">詞性</th>
           <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">中文意思</th>
-          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">發音</th>
-          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">相關文章</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/4">發音</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/4">相關文章</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -88,11 +88,7 @@
           <td class="px-6 py-4 whitespace-nowrap">{{ word.chinese }}</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ word.pronunciation }}</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            {% if word.articleId %}
-              <a href="/article/{{ word.articleId }}" class="text-[#B45309] hover:underline">前往</a>
-            {% else %}
-              -
-            {% endif %}
+            <a href="/word/{{ word.id }}" class="text-[#B45309] hover:underline">相關文章</a>
           </td>
         </tr>
         {% endfor %}
@@ -103,19 +99,19 @@
   <!-- 手機版：卡片顯示 -->
   <div class="block md:hidden flex flex-col space-y-4">
     {% for word in words %}
-    <div class="bg-white rounded-lg shadow p-4 vocabulary-row" data-type="{{ word.type }}">
+    <div class="bg-white rounded-lg shadow p-4 vocabulary-row hover:shadow-md transition-shadow" data-type="{{ word.type }}">
       <div class="mb-2">
-        <h3 class="text-lg thai-text font-bold">{{ word.thai }} <span class="text-sm font-normal text-gray-600">({{ word.chinese }})</span></h3>
+        <h3 class="text-lg thai-text font-bold">{{ word.thai }}</a>
+          <span class="text-sm font-normal text-gray-600">({{ word.chinese }})</span>
+        </h3>
       </div>
       <div class="flex flex-wrap items-center text-sm text-gray-600 mb-2">
         <span class="px-2 py-1 bg-gray-100 rounded-full mr-2">{{ word.type }}</span>
         <span>[{{ word.pronunciation }}]</span>
       </div>
-      {% if word.articleId %}
-      <div class="text-right">
-        <a href="/article/{{ word.articleId }}" class="text-[#B45309] hover:underline text-sm">前往相關文章</a>
+      <div class="text-right text-[#B45309] text-sm mt-2">
+        <a href="/word/{{ word.id }}" class="hover:underline">相關文章</a>
       </div>
-      {% endif %}
     </div>
     {% endfor %}
   </div>

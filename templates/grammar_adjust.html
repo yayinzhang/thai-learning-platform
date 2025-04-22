@@ -78,9 +78,9 @@
               {% endfor %}
             </div>
             {% endif %}
-            {% if point.articleId %}
-              <div class="text-right mt-2">
-                <a href="/article/{{ point.articleId }}" class="text-[#B45309] hover:underline text-sm">相關文章</a>
+            {% if point.articleLinks %}
+              <div class="text-right text-[#B45309] text-sm mt-2">
+                <a href="/grammar/{{ point.id }}" class="hover:underline">相關文章</a>
               </div>
             {% endif %}
           </div>

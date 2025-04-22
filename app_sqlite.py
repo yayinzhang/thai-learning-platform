@@ -21,8 +21,8 @@ def index():
     article_data = []
     for article in articles:
         article_id = article['id']
-        word_count = conn.execute('SELECT COUNT(*) FROM Word WHERE articleId = ?', (article_id,)).fetchone()[0]
-        grammar_count = conn.execute('SELECT COUNT(*) FROM GrammarPoint WHERE articleId = ?', (article_id,)).fetchone()[0]
+        word_count = conn.execute('SELECT COUNT(*) FROM WordArticle WHERE articleId = ?', (article_id,)).fetchone()[0]
+        grammar_count = conn.execute('SELECT COUNT(*) FROM GrammarArticle WHERE articleId = ?', (article_id,)).fetchone()[0]
         article_data.append({**dict(article), 'wordCount': word_count, 'grammarCount': grammar_count})
     
     conn.close()
@@ -33,10 +33,19 @@ def article_detail(article_id):
     conn = get_db_connection()
 
     article = conn.execute('SELECT * FROM Article WHERE id = ?', (article_id,)).fetchone()
-    words = conn.execute('SELECT * FROM Word WHERE articleId = ?', (article_id,)).fetchall()
+    words = conn.execute('''
+        SELECT Word.* FROM Word
+        JOIN WordArticle ON Word.id = WordArticle.wordId
+        WHERE WordArticle.articleId = ?
+    ''', (article_id,)).fetchall()
 
     grammar_points = conn.execute(
-        'SELECT * FROM GrammarPoint WHERE articleId = ?', (article_id,)
+        '''
+        SELECT GrammarPoint.*
+        FROM GrammarPoint
+        JOIN GrammarArticle ON GrammarPoint.id = GrammarArticle.grammarPointId
+        WHERE GrammarArticle.articleId = ?
+        ''', (article_id,)
     ).fetchall()
 
     grammars = []
@@ -67,25 +76,63 @@ def article_detail(article_id):
 def vocabulary():
     conn = get_db_connection()
     words = conn.execute("""
-        SELECT * FROM Word
-        WHERE articleId IN (
-            SELECT id FROM Article WHERE status = 'published'
-        )
-        ORDER BY createdAt DESC
+        SELECT DISTINCT Word.*
+        FROM Word
+        JOIN WordArticle ON Word.id = WordArticle.wordId
+        JOIN Article ON WordArticle.articleId = Article.id
+        WHERE Article.status = 'published'
+        ORDER BY Word.createdAt DESC
     """).fetchall()
     conn.close()
     return render_template('vocabulary_adjust.html', words=words)
+
+@app.route('/word/<int:word_id>')
+def word_detail(word_id):
+    conn = get_db_connection()
+    word = conn.execute('SELECT * FROM Word WHERE id = ?', (word_id,)).fetchone()
+
+    # 找出所有對應的已發佈文章
+    articles = conn.execute("""
+        SELECT Article.*
+        FROM Article
+        JOIN WordArticle ON Article.id = WordArticle.articleId
+        WHERE WordArticle.wordId = ? AND Article.status = 'published'
+        ORDER BY Article.createdAt DESC
+    """, (word_id,)).fetchall()
+
+    conn.close()
+    return render_template('word_detail.html', word=word, articles=articles)
 
 @app.route('/grammar')
 def grammar():
     conn = get_db_connection()
     grammar_points = conn.execute("""
-        SELECT * FROM GrammarPoint
-        WHERE articleId IN (
-            SELECT id FROM Article WHERE status = 'published'
-        )
-        ORDER BY createdAt DESC
+        SELECT DISTINCT GrammarPoint.*
+        FROM GrammarPoint
+        JOIN GrammarArticle ON GrammarPoint.id = GrammarArticle.grammarPointId
+        JOIN Article ON GrammarArticle.articleId = Article.id
+        WHERE Article.status = 'published'
+        ORDER BY GrammarPoint.createdAt DESC
     """).fetchall()
+
+    # 多對多: 查出每個 grammarPointId 關聯的所有文章（已發佈）
+    grammar_article_map = {}
+    grammar_article_counts = {}
+    grammar_article_links = {}
+
+    rows = conn.execute("""
+        SELECT grammarPointId, Article.id as articleId, Article.chineseTitle
+        FROM GrammarArticle
+        JOIN Article ON GrammarArticle.articleId = Article.id
+        WHERE Article.status = 'published'
+    """).fetchall()
+
+    for row in rows:
+        gid = row['grammarPointId']
+        grammar_article_map.setdefault(gid, []).append(row['chineseTitle'])
+        grammar_article_links.setdefault(gid, []).append({'id': row['articleId'], 'title': row['chineseTitle']})
+        grammar_article_counts[gid] = grammar_article_counts.get(gid, 0) + 1
+
     grammar_data = []
     for point in grammar_points:
         examples = conn.execute('SELECT * FROM GrammarExample WHERE grammarPointId = ?', (point['id'],)).fetchall()
@@ -94,11 +141,36 @@ def grammar():
             'title': point['title'],
             'explanation': point['explanation'],
             'examples': examples,
-            'articleId': point['articleId']
+            'articleLinks': grammar_article_links.get(point['id'], []),
+            'articleCount': grammar_article_counts.get(point['id'], 0),
+            'detailUrl': f'/grammar/{point["id"]}'
         })
 
     conn.close()
     return render_template('grammar_adjust.html', grammar_points=grammar_data)
+
+@app.route('/grammar/<int:grammar_id>')
+def grammar_detail(grammar_id):
+    conn = get_db_connection()
+
+    grammar_point = conn.execute(
+        'SELECT * FROM GrammarPoint WHERE id = ?', (grammar_id,)
+    ).fetchone()
+
+    examples = conn.execute(
+        'SELECT * FROM GrammarExample WHERE grammarPointId = ?', (grammar_id,)
+    ).fetchall()
+
+    articles = conn.execute("""
+        SELECT Article.*
+        FROM Article
+        JOIN GrammarArticle ON Article.id = GrammarArticle.articleId
+        WHERE GrammarArticle.grammarPointId = ? AND Article.status = 'published'
+        ORDER BY Article.createdAt DESC
+    """, (grammar_id,)).fetchall()
+
+    conn.close()
+    return render_template('grammar_detail.html', grammar=grammar_point, examples=examples, articles=articles)
 
 @app.route('/admin')
 def admin():
