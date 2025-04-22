@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單字庫</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Sarabun', sans-serif;
+      background-color: #ffffff;
+    }
+    .thai-text {
+      font-family: 'Sarabun', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-white">
+    <!-- 導覽欄 -->
+  <nav class="bg-[#FCD34D] shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-bold text-[#1F2937]">泰文學習平台</span>
+          <span class="thai-text text-xl text-[#1F2937]/80">Thai-Mandarin</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="text-[#1F2937] hover:text-[#B45309]">文章列表</a>
+          <a href="/vocabulary" class="text-[#1F2937] hover:text-[#B45309]">單字庫</a>
+          <a href="/grammar" class="text-[#1F2937] hover:text-[#B45309]">文法庫</a>
+          <!-- <a href="#" class="tab-btn" data-tab="admin">管理介面</a> -->
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-[#1F2937] hover:text-[#B45309]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="/" class="block py-2 px-4 text-[#1F2937] hover:text-[#B45309]">文章列表</a>
+      <a href="/vocabulary" class="block py-2 px-4 text-[#1F2937] hover:text-[#B45309]">單字庫</a>
+      <a href="/grammar" class="block py-2 px-4 text-[#1F2937] hover:text-[#B45309]">文法庫</a>
+      <!-- <a href="#" class="block py-2 px-4 hover:text-blue-600">管理介面</a> -->
+    </div>
+  </nav>
+  <div class="px-4 py-8">
+  
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">單字庫</h1>
+
+  <!-- 搜尋列與分類按鈕可先保留 -->
+  <div class="mb-6">
+    <div class="flex mb-4">
+      <input id="vocabulary-search" type="text" placeholder="搜尋單字..." class="border rounded-l-md px-4" />
+      <button class="bg-[#FCD34D] hover:bg-[#FBBF24] text-[#1F2937] hover:text-white px-4 py-2 rounded-r-md transition-colors">搜尋</button>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="名詞">名詞</button>
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="動詞">動詞</button>
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="形容詞">形容詞</button>
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="副詞">副詞</button>
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="介係詞">介係詞</button>
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="連接詞">連接詞</button>
+      <button class="px-3 py-1 bg-[#FFFDEA] text-[#1F2937] rounded-full hover:bg-[#FBBF24]" data-type="代名詞">代名詞</button>
+    </div>
+  </div>
+
+  <!-- 桌機版：表格顯示 -->
+  <div class="hidden md:block bg-white rounded-lg shadow-md overflow-x-auto">
+    <table class="min-w-full w-full table-fixed">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">單字</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">詞性</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">中文意思</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">發音</th>
+          <th class="px-6 py-3 text-left text-xs text-gray-500 uppercase w-1/5">相關文章</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {% for word in words %}
+        <tr class="hover:bg-gray-50 vocabulary-row" data-type="{{ word.type }}">
+          <td class="px-6 py-4 whitespace-nowrap thai-text">{{ word.thai }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ word.type }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ word.chinese }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ word.pronunciation }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            {% if word.articleId %}
+              <a href="/article/{{ word.articleId }}" class="text-[#B45309] hover:underline">前往</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 手機版：卡片顯示 -->
+  <div class="block md:hidden flex flex-col space-y-4">
+    {% for word in words %}
+    <div class="bg-white rounded-lg shadow p-4 vocabulary-row" data-type="{{ word.type }}">
+      <div class="mb-2">
+        <h3 class="text-lg thai-text font-bold">{{ word.thai }} <span class="text-sm font-normal text-gray-600">({{ word.chinese }})</span></h3>
+      </div>
+      <div class="flex flex-wrap items-center text-sm text-gray-600 mb-2">
+        <span class="px-2 py-1 bg-gray-100 rounded-full mr-2">{{ word.type }}</span>
+        <span>[{{ word.pronunciation }}]</span>
+      </div>
+      {% if word.articleId %}
+      <div class="text-right">
+        <a href="/article/{{ word.articleId }}" class="text-[#B45309] hover:underline text-sm">前往相關文章</a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const input = document.querySelector('#vocabulary-search');
+      const rows = document.querySelectorAll('.vocabulary-row');
+
+      input.addEventListener('input', function () {
+        const keyword = this.value.toLowerCase();
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          const combinedText = Array.from(cells).map(td => td.innerText.toLowerCase()).join(' ');
+          row.style.display = combinedText.includes(keyword) ? '' : 'none';
+        });
+      });
+
+      const typeButtons = document.querySelectorAll('button[data-type]');
+      typeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const selectedType = button.getAttribute('data-type');
+          typeButtons.forEach(b => b.classList.remove('bg-[#FBBF24]', 'text-white'));
+          button.classList.add('bg-[#FBBF24]', 'text-white');
+
+          rows.forEach(row => {
+            const rowType = row.getAttribute('data-type');
+            row.style.display = (rowType === selectedType) ? '' : 'none';
+          });
+        });
+      });
+    });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+  
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener("click", function () {
+          if (mobileMenu.style.display === "none" || mobileMenu.style.display === "") {
+            mobileMenu.style.display = "block";
+          } else {
+            mobileMenu.style.display = "none";
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

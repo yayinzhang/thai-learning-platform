@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ article.title }}｜{{ article.chineseTitle }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Sarabun', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .thai-text {
+      font-family: 'Sarabun', sans-serif;
+    }
+    .gradient-bg {
+      background-color: #FCD34D;
+      color: #1F2937;
+    }
+  </style>
+</head>
+<body class="bg-white">
+    <!-- 導覽欄 -->
+  <nav class="bg-[#FCD34D] shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-bold text-[#1F2937]">泰文學習平台</span>
+          <span class="thai-text text-xl text-[#1F2937]/80">Thai-Mandarin</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="text-[#1F2937] hover:text-[#B45309]">文章列表</a>
+          <a href="/vocabulary" class="text-[#1F2937] hover:text-[#B45309]">單字庫</a>
+          <a href="/grammar" class="text-[#1F2937] hover:text-[#B45309]">文法庫</a>
+          <!-- <a href="#" class="tab-btn" data-tab="admin">管理介面</a> -->
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-[#1F2937] hover:text-[#B45309]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="/" class="block py-2 px-4 text-[#1F2937] hover:text-[#B45309]">文章列表</a>
+      <a href="/vocabulary" class="block py-2 px-4 text-[#1F2937] hover:text-[#B45309]">單字庫</a>
+      <a href="/grammar" class="block py-2 px-4 text-[#1F2937] hover:text-[#B45309]">文法庫</a>
+      <!-- <a href="#" class="block py-2 px-4 hover:text-blue-600">管理介面</a> -->
+    </div>
+  </nav>
+  
+  <div class="px-4 py-8">
+    <div class="mb-4">
+      <a href="/" class="text-[#B45309] hover:underline text-lg">&larr; 返回文章列表</a>
+    </div>
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="gradient-bg p-6 text-white">
+      <h1 class="text-3xl font-bold mb-2 text-[#1F2937]">
+        <span class="thai-text block">{{ article.title }}</span>
+       <span class="text-xl font-normal">{{ article.chineseTitle }}</span>
+      </h1>
+      <p class="text-[#4B5563]">{{ article.createdAt[:10] }}</p>
+      <p class="mt-2 text-sm text-[#5C4033]">
+        原始來源：
+        <a href="{{ article.url }}" target="_blank" class="underline">{{ article.url }}</a>
+      </p>
+    </div>
+
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h2 class="text-xl font-semibold mb-4">泰文原文</h2>
+          <div class="thai-text text-gray-800 leading-relaxed whitespace-pre-line">
+            {{ article.content }}
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold mb-4">中文翻譯</h2>
+          <div class="text-gray-800 leading-relaxed whitespace-pre-line">
+            {{ article.chineseContent }}
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">單字表</h2>
+        {% if words %}
+          <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {% for word in words %}
+            <div class="bg-white rounded-lg shadow p-4">
+              <div class="text-xl font-semibold mb-2 flex flex-wrap items-center space-x-2">
+                <span class="thai-text">{{ word.thai }}</span>
+              <span class="text-gray-600">- {{ word.chinese }}</span>
+              </div>
+              <div class="flex items-center space-x-2 mb-2">
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">{{ word.type }}</span>
+                <span class="text-sm text-gray-500">[{{ word.pronunciation }}]</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+            尚無單字資料。
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">句型與文法</h2>
+        {% if grammars %}
+          <div class="space-y-4">
+            {% for grammar in grammars %}
+              <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 class="text-lg font-semibold mb-1">{{ grammar.title }}</h3>
+                <p class="text-gray-700 mb-3">{{ grammar.explanation }}</p>
+                {% if grammar.examples %}
+                  <div class="space-y-2">
+                    {% for ex in grammar.examples %}
+                      <div class="bg-gray-50 p-3 rounded-md">
+                        <p class="thai-text mb-1">{{ ex.thai }}</p>
+                        <p>{{ ex.chinese }}</p>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+            尚無文法資料。
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+  
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener("click", function () {
+          if (mobileMenu.style.display === "none" || mobileMenu.style.display === "") {
+            mobileMenu.style.display = "block";
+          } else {
+            mobileMenu.style.display = "none";
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
