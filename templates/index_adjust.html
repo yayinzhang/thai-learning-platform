@@ -126,4 +126,43 @@
     }
   });
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuBtn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
+
+    if (menuBtn && menu) {
+      menuBtn.addEventListener("click", function () {
+        if (menu.style.display === "none" || menu.style.display === "") {
+          menu.style.display = "block";
+        } else {
+          menu.style.display = "none";
+        }
+      });
+    }
+
+    // 分類按鈕點擊切換文章分類
+    const categoryBtns = document.querySelectorAll(".category-btn");
+    const articleCards = document.querySelectorAll(".article-card");
+
+    categoryBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const type = btn.dataset.type;
+        
+        categoryBtns.forEach((b) => b.classList.remove("active-category"));
+        btn.classList.add("active-category");
+
+        articleCards.forEach((card) => {
+          if (type === "全部" || card.dataset.type === type) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      });
+    });
+  });
+</script>
+
 </html>
