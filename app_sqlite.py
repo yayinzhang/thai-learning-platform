@@ -100,8 +100,15 @@ def word_detail(word_id):
         ORDER BY Article.createdAt DESC
     """, (word_id,)).fetchall()
 
+    # 抓取這個單字的例句
+    examples = conn.execute("""
+        SELECT * FROM WordExample
+        WHERE wordId = ?
+        ORDER BY createdAt DESC
+    """, (word_id,)).fetchall()
+
     conn.close()
-    return render_template('word_detail.html', word=word, articles=articles)
+    return render_template('word_detail.html', word=word, articles=articles, examples=examples)
 
 @app.route('/grammar')
 def grammar():

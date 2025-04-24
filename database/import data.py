@@ -95,6 +95,18 @@ try:
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS WordExample (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            thai TEXT,
+            chinese TEXT,
+            wordId INTEGER,
+            createdAt TEXT,
+            updatedAt TEXT,
+            FOREIGN KEY(wordId) REFERENCES Word(id)
+        )
+    """)
+
     author_id = 999  # fixed author id as before
 
     # Insert Article
@@ -139,6 +151,20 @@ try:
                 now
             ))
             word_id = cursor.lastrowid
+
+        # 插入 WordExample（如果有）
+        for example in word.get("examples", []):
+            cursor.execute("""
+                INSERT INTO WordExample (thai, chinese, wordId, articleId, createdAt, updatedAt)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                example.get('thai', '').strip(),
+                example.get('chinese', '').strip(),
+                word_id,
+                article_id,
+                now,
+                now
+            ))
 
         # 插入關聯表
         cursor.execute("""

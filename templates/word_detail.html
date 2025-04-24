@@ -84,17 +84,22 @@
   <h1 class="text-2xl font-bold mb-2">{{ word.thai }} <span class="text-base text-gray-600">({{ word.chinese }})</span></h1>
   <p class="text-sm text-gray-500 mb-6">詞性：{{ word.type }} | 發音：[{{ word.pronunciation }}]</p>
 
-  <h2 class="text-xl font-semibold mb-4">出現在以下文章：</h2>
-  <ul class="space-y-3">
-    {% for article in articles %}
-    <li>
-      <a href="/article/{{ article.id }}" class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition">
-        <p class="text-lg font-medium text-blue-600">{{ article.chineseTitle or article.title }}</p>
-        <p class="text-sm text-gray-500">{{ article.createdAt[:10] }}</p>
-      </a>
+  <h2 class="text-xl font-semibold mb-4">例句範例：</h2>
+  <ul class="space-y-4">
+    {% for example in examples %}
+    <li class="bg-gray-50 p-4 rounded-lg shadow-sm">
+      <p class="thai-text text-lg font-semibold mb-1">{{ example.thai }}</p>
+      <div class="flex justify-between items-center">
+        <p class="text-gray-700 mb-2">{{ example.chinese }}</p>
+        {% if example.articleId %}
+          <a href="/article/{{ example.articleId }}" class="text-sm text-blue-600 hover:underline ml-4 whitespace-nowrap">→ 前往原文</a>
+        {% else %}
+          <span class="text-sm text-gray-400 ml-4 whitespace-nowrap">無原文連結</span>
+        {% endif %}
+      </div>
     </li>
     {% else %}
-    <li class="text-gray-400">尚未被使用於任何文章</li>
+    <li class="text-gray-400">目前尚無例句</li>
     {% endfor %}
   </ul>
 </div>
