@@ -68,7 +68,7 @@
         </div>
       </div>
     </div>
-    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+    <div id="mobile-menu" class="md:hidden pb-4 hidden">
       <a href="/" class="block py-2 px-4 text-black hover:text-gray-700">文章列表</a>
       <a href="/vocabulary" class="block py-2 px-4 text-black hover:text-gray-700">單字庫</a>
       <a href="/grammar" class="block py-2 px-4 text-black hover:text-gray-700">文法庫</a>
@@ -110,22 +110,6 @@
 </div>
 
 </body>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const menuBtn = document.getElementById("mobile-menu-btn");
-    const menu = document.getElementById("mobile-menu");
-
-    if (menuBtn && menu) {
-      menuBtn.addEventListener("click", function () {
-        if (menu.style.display === "none" || menu.style.display === "") {
-          menu.style.display = "block";
-        } else {
-          menu.style.display = "none";
-        }
-      });
-    }
-  });
-</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -134,11 +118,7 @@
 
     if (menuBtn && menu) {
       menuBtn.addEventListener("click", function () {
-        if (menu.style.display === "none" || menu.style.display === "") {
-          menu.style.display = "block";
-        } else {
-          menu.style.display = "none";
-        }
+        menu.classList.toggle("hidden");
       });
     }
 
