@@ -23,7 +23,19 @@ def index():
         article_id = article['id']
         word_count = conn.execute('SELECT COUNT(*) FROM WordArticle WHERE articleId = ?', (article_id,)).fetchone()[0]
         grammar_count = conn.execute('SELECT COUNT(*) FROM GrammarArticle WHERE articleId = ?', (article_id,)).fetchone()[0]
-        article_data.append({**dict(article), 'wordCount': word_count, 'grammarCount': grammar_count})
+        category = article['category']
+        if category and '_' in category:
+            main_cat, sub_cat = category.split('_', 1)
+        else:
+            main_cat, sub_cat = 'uncategorized', 'uncategorized'
+
+        article_data.append({
+            **dict(article),
+            'wordCount': word_count,
+            'grammarCount': grammar_count,
+            'mainCategory': main_cat,
+            'subCategory': sub_cat
+        })
     
     conn.close()
     return render_template('index_adjust.html', articles=article_data)

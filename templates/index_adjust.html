@@ -81,18 +81,36 @@
 <div class="container mx-auto px-4 py-8">
   <!-- 文章列表頁面 -->
   <div id="articles" class="tab-content">
-        <div class="flex flex-wrap gap-2 mb-6">
-          <button class="category-btn px-3 py-1 bg-[var(--main-color-light)] text-[var(--main-color-dark)] rounded-full hover:bg-[var(--main-color-light-hover)]" data-type="全部">全部</button>
-          <button class="category-btn px-3 py-1 bg-[var(--main-color-light)] text-[var(--main-color-dark)] rounded-full hover:bg-[var(--main-color-light-hover)]" data-type="news">時事</button>
-          <button class="category-btn px-3 py-1 bg-[var(--main-color-light)] text-[var(--main-color-dark)] rounded-full hover:bg-[var(--main-color-light-hover)]" data-type="lyrics">歌詞</button>
-          <button class="category-btn px-3 py-1 bg-[var(--main-color-light)] text-[var(--main-color-dark)] rounded-full hover:bg-[var(--main-color-light-hover)]" data-type="translation">翻譯</button>
-        </div>
+
+    <div class="flex flex-wrap gap-3 mb-4">
+      <button class="main-category-btn bg-yellow-200 hover:bg-yellow-300 px-3 py-1 rounded" data-main="news">新聞</button>
+      <button class="main-category-btn bg-yellow-200 hover:bg-yellow-300 px-3 py-1 rounded" data-main="lyrics">歌詞</button>
+      <button class="main-category-btn bg-yellow-200 hover:bg-yellow-300 px-3 py-1 rounded" data-main="translation">翻譯</button>
+    </div>
+
+    <div id="sub-category-news" class="sub-category-group hidden flex gap-2 mb-6">
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="business">商業</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="politics">政治</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="entertainment">娛樂</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="science">科學</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="tech">科技</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="society">社會</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="misc">其他</button>
+    </div>
+    <div id="sub-category-lyrics" class="sub-category-group hidden flex gap-2 mb-6">
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="nonttanont">Nont Tanont</button>
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="tillybirds">Tilly Birds</button>
+    </div>
+    <div id="sub-category-translation" class="sub-category-group hidden flex gap-2 mb-6">
+      <button class="sub-category-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded" data-sub="misc">其他</button>
+    </div>
+
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-6 text-gray-800">最新文章</h1>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- 文章卡片 -->
         {% for article in articles %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 article-card" data-type="{{ article.category }}">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 article-card" data-main="{{ article.category.split('_')[0] }}" data-sub="{{ article.category.split('_')[1] }}">
         <div class="gradient-bg p-4 h-28 flex flex-col justify-between">
           <h3 class="text-xl font-semibold leading-snug line-clamp-2 break-words">{{ article.chineseTitle }}</h3>
           <p class="text-sm opacity-80">{{ article.createdAt[:10] }}</p>
@@ -129,24 +147,39 @@
       });
     }
 
-    // 分類按鈕點擊切換文章分類
-    const categoryBtns = document.querySelectorAll(".category-btn");
     const articleCards = document.querySelectorAll(".article-card");
+    const mainButtons = document.querySelectorAll(".main-category-btn");
+    const subButtons = document.querySelectorAll(".sub-category-btn");
+    const subGroups = document.querySelectorAll(".sub-category-group");
 
-    categoryBtns.forEach((btn) => {
+    let selectedMain = "all";
+    let selectedSub = "all";
+
+    function filterArticles() {
+      articleCards.forEach((card) => {
+        const cardMain = card.dataset.main;
+        const cardSub = card.dataset.sub;
+        const matchMain = selectedMain === "all" || cardMain === selectedMain;
+        const matchSub = selectedSub === "all" || cardSub === selectedSub;
+        card.style.display = matchMain && matchSub ? "block" : "none";
+      });
+    }
+
+    mainButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        const type = btn.dataset.type;
-        
-        categoryBtns.forEach((b) => b.classList.remove("active-category"));
-        btn.classList.add("active-category");
+        selectedMain = btn.dataset.main;
+        selectedSub = "all";
+        filterArticles();
+        subGroups.forEach((group) => group.classList.add("hidden"));
+        const targetGroup = document.getElementById(`sub-category-${selectedMain}`);
+        if (targetGroup) targetGroup.classList.remove("hidden");
+      });
+    });
 
-        articleCards.forEach((card) => {
-          if (type === "全部" || card.dataset.type === type) {
-            card.style.display = "block";
-          } else {
-            card.style.display = "none";
-          }
-        });
+    subButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selectedSub = btn.dataset.sub;
+        filterArticles();
       });
     });
   });
