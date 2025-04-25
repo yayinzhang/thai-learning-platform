@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文法編輯</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&family=Jin+Xuan&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-color: #FCD34D;          /* 亮黃主色 */
+      --main-color-hover: #FBBF24;    /* hover 金橘色 */
+      --main-color-light: #FFFDEA;    /* 背景淺黃白 */
+      --main-color-light-hover: #FEF3C7;
+      --main-color-bg: #ffffff;
+      --main-color-dark: #1F2937;     /* 深灰文字 */
+      --main-color-darker: #111827;
+    }
+    body {
+      font-family: 'Noto Sans TC', 'Sarabun', sans-serif;
+      background-color: #F5F5F4;
+    }
+    .thai-text {
+      font-family: 'Sarabun', sans-serif;
+    }
+    .gradient-bg {
+      background-color: var(--main-color);
+      color: var(--main-color-dark);
+    }
+    .active-category {
+      background-color: var(--main-color) !important;
+      color: white !important;
+    }
+    .nav-title {
+      font-family: 'Jin Xuan', '金萱體', 'Noto Sans TC', sans-serif;
+      font-weight: bold;
+    }
+    .nav-subtitle {
+      font-family: 'Times New Roman', serif;
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- 導覽欄 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <a href="/" class="flex items-end space-x-2">
+            <span class="nav-title text-2xl font-bold text-black">泰文學習平台</span>
+            <span class="nav-subtitle text-2xl text-black/80 self-end">Thai Learning</span>
+          </a>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="tab-btn active-tab text-black hover:text-gray-700" data-tab="articles">文章列表</a>
+          <a href="/vocabulary" class="text-black hover:text-gray-700">單字庫</a>
+          <a href="/grammar" class="text-black hover:text-gray-700">文法庫</a>
+          <!-- <a href="#" class="tab-btn" data-tab="admin">管理介面</a> -->
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-black hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="/" class="block py-2 px-4 text-black hover:text-gray-700">文章列表</a>
+      <a href="/vocabulary" class="block py-2 px-4 text-black hover:text-gray-700">單字庫</a>
+      <a href="/grammar" class="block py-2 px-4 text-black hover:text-gray-700">文法庫</a>
+    </div>
+  </nav>
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+  <div class="mb-4">
+    <a href="/grammar" class="inline-block px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+      ← 返回文法庫
+    </a>
+  </div>
+  <form method="POST">
+    <input type="text" name="title" value="{{ grammar.title }}" class="block w-full mb-2 px-3 py-2 border rounded" />
+    <textarea name="explanation" class="block w-full mb-4 px-3 py-2 border rounded" rows="3">{{ grammar.explanation }}</textarea>
+    {% if examples %}
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">例句：</h2>
+      <div class="space-y-3">
+        {% for example in examples %}
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <label class="block font-medium mb-1">泰文：</label>
+          <textarea name="example_thai_{{ example.id }}" class="thai-text block w-full mb-2 px-3 py-2 border rounded" rows="2">{{ example.thai }}</textarea>
+          <label class="block font-medium mb-1">中文：</label>
+          <textarea name="example_chinese_{{ example.id }}" class="block w-full px-3 py-2 border rounded" rows="2">{{ example.chinese }}</textarea>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="pb-20">
+      <button type="submit" class="px-6 py-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold rounded">儲存</button>
+    </div>
+  </form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuBtn = document.getElementById("mobile-menu-btn");
+    const menu = document.getElementById("mobile-menu");
+
+    if (menuBtn && menu) {
+      menuBtn.addEventListener("click", function () {
+        if (menu.style.display === "none" || menu.style.display === "") {
+          menu.style.display = "block";
+        } else {
+          menu.style.display = "none";
+        }
+      });
+    }
+  });
+</script>
+</div>

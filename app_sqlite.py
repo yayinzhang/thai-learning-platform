@@ -110,6 +110,43 @@ def word_detail(word_id):
     conn.close()
     return render_template('word_detail.html', word=word, articles=articles, examples=examples)
 
+# 編輯單字頁面功能
+from flask import request, redirect, url_for
+from datetime import datetime
+
+@app.route('/word/<int:word_id>/edit', methods=['GET', 'POST'])
+def edit_word(word_id):
+    conn = get_db_connection()
+    word = conn.execute('SELECT * FROM Word WHERE id = ?', (word_id,)).fetchone()
+    examples = conn.execute('SELECT * FROM WordExample WHERE wordId = ? ORDER BY createdAt DESC', (word_id,)).fetchall()
+
+    if request.method == 'POST':
+        new_thai = request.form['thai']
+        new_chinese = request.form['chinese']
+        now = datetime.now().isoformat()
+
+        # 更新 Word
+        conn.execute('UPDATE Word SET thai = ?, chinese = ?, updatedAt = ? WHERE id = ?',
+                     (new_thai, new_chinese, now, word_id))
+
+        # 遍歷所有例句做更新
+        for example in examples:
+            example_id = str(example['id'])
+            example_thai = request.form.get(f'exampleThai_{example_id}', '').strip()
+            example_chinese = request.form.get(f'exampleChinese_{example_id}', '').strip()
+
+            conn.execute('''
+                UPDATE WordExample SET thai = ?, chinese = ?, updatedAt = ?
+                WHERE id = ?
+            ''', (example_thai, example_chinese, now, example_id))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('word_detail', word_id=word_id))
+
+    conn.close()
+    return render_template('edit_word.html', word=word, examples=examples)
+
 @app.route('/grammar')
 def grammar():
     conn = get_db_connection()
@@ -178,6 +215,56 @@ def grammar_detail(grammar_id):
 
     conn.close()
     return render_template('grammar_detail.html', grammar=grammar_point, examples=examples, articles=articles)
+
+@app.route('/grammar/<int:grammar_id>/edit', methods=['GET', 'POST'])
+def edit_grammar(grammar_id):
+    conn = get_db_connection()
+
+    if request.method == 'POST':
+        new_title = request.form['title']
+        new_explanation = request.form['explanation']
+        now = datetime.now().isoformat()
+
+        conn.execute('UPDATE GrammarPoint SET title = ?, explanation = ?, updatedAt = ? WHERE id = ?',
+                     (new_title, new_explanation, now, grammar_id))
+
+        examples = conn.execute(
+            'SELECT * FROM GrammarExample WHERE grammarPointId = ?', (grammar_id,)
+        ).fetchall()
+
+        for example in examples:
+            ex_id = example['id']
+            thai = request.form.get(f'example_thai_{ex_id}', '').strip()
+            chinese = request.form.get(f'example_chinese_{ex_id}', '').strip()
+
+            conn.execute('''
+                UPDATE GrammarExample
+                SET thai = ?, chinese = ?, updatedAt = ?
+                WHERE id = ?
+            ''', (thai, chinese, now, ex_id))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('grammar_detail', grammar_id=grammar_id))
+
+    grammar_point = conn.execute(
+        'SELECT * FROM GrammarPoint WHERE id = ?', (grammar_id,)
+    ).fetchone()
+
+    examples = conn.execute(
+        'SELECT * FROM GrammarExample WHERE grammarPointId = ?', (grammar_id,)
+    ).fetchall()
+
+    articles = conn.execute("""
+        SELECT Article.*
+        FROM Article
+        JOIN GrammarArticle ON Article.id = GrammarArticle.articleId
+        WHERE GrammarArticle.grammarPointId = ? AND Article.status = 'published'
+        ORDER BY Article.createdAt DESC
+    """, (grammar_id,)).fetchall()
+
+    conn.close()
+    return render_template('edit_grammar.html', grammar=grammar_point, examples=examples, articles=articles)
 
 @app.route('/admin')
 def admin():
