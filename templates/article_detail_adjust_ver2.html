@@ -51,7 +51,11 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       font-size: 14px;
       z-index: 1000;
-      white-space: nowrap;
+      max-width: 90vw;
+      min-width: 160px;
+      white-space: normal;
+      overflow-wrap: break-word;
+      transform: translateX(-50%);
     }
     .inline-word {
       cursor: pointer;
@@ -224,13 +228,32 @@
           const tooltip = document.createElement("div");
           tooltip.className = "word-tooltip";
           tooltip.innerHTML = `
-            <div class="thai-text text-base font-medium">${thai} <span class="text-sm text-gray-500">[${info.pronunciation}]</span> <span class="text-sm text-gray-600">(${info.type})</span> ${info.chinese}</div>
+            <div class="text-sm leading-snug">
+              <div class="thai-text text-base font-medium mb-1">${thai} <span class="text-sm text-gray-500">[${info.pronunciation}]</span></div>
+              <div class="text-gray-800">${info.chinese} <span class="text-sm text-gray-500">（${info.type}）</span></div>
+            </div>
           `;
           document.body.appendChild(tooltip);
 
           const rect = span.getBoundingClientRect();
-          tooltip.style.top = `${window.scrollY + rect.bottom + 5}px`;
-          tooltip.style.left = `${window.scrollX + rect.left}px`;
+          let left = window.scrollX + rect.left + rect.width / 2;
+          let top = window.scrollY + rect.bottom + 5;
+          tooltip.style.top = `${top}px`;
+          tooltip.style.left = `${left}px`;
+
+          // 防止突出去左右
+          requestAnimationFrame(() => {
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const vw = window.innerWidth;
+
+            if (tooltipRect.left < 8) {
+              tooltip.style.left = `${8 + window.scrollX}px`;
+              tooltip.style.transform = 'none';
+            } else if (tooltipRect.right > vw - 8) {
+              tooltip.style.left = `${vw - tooltipRect.width - 8 + window.scrollX}px`;
+              tooltip.style.transform = 'none';
+            }
+          });
 
           const removeTooltip = () => {
             tooltip.remove();
