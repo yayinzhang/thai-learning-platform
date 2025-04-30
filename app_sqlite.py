@@ -50,6 +50,19 @@ def article_detail(article_id):
         JOIN WordArticle ON Word.id = WordArticle.wordId
         WHERE WordArticle.articleId = ?
     ''', (article_id,)).fetchall()
+    words = [dict(row) for row in words]
+    for word in words:
+        example = conn.execute('''
+            SELECT thai, chinese FROM WordExample
+            WHERE wordId = ? AND articleId = ?
+            ORDER BY createdAt DESC LIMIT 1
+        ''', (word['id'], article_id)).fetchone()
+        if example:
+            word['example_thai'] = example['thai']
+            word['example_chinese'] = example['chinese']
+        else:
+            word['example_thai'] = ''
+            word['example_chinese'] = ''
 
     grammar_points = conn.execute(
         '''
@@ -75,8 +88,15 @@ def article_detail(article_id):
     conn.close()
 
     if article and article['status'] == 'published':
+        article = dict(article)
+        content = article['content']
+        for word in words:
+            word_tag = f'<span class="inline-word" data-word="{word["thai"]}" data-id="{word["id"]}">{word["thai"]}</span>'
+            content = content.replace(word['thai'], word_tag)
+        article['content'] = content
+
         return render_template(
-            'article_detail_adjust.html',
+            'article_detail_adjust_ver2.html',
             article=article,
             words=words,
             grammars=grammars
