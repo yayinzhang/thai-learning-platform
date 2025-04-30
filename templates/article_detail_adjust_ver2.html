@@ -136,18 +136,16 @@
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4">單字表</h2>
         {% if words %}
-          <div class="grid gap-3 grid-cols-1 md:grid-cols-3">
+          <div class="grid gap-3 grid-cols-1 md:grid-cols-2">
             {% for word in words %}
             <a href="/word/{{ word.id }}" class="block bg-white rounded-md shadow p-3 hover:shadow-lg transition-shadow duration-200">
-              <div class="text-base font-medium flex flex-wrap items-center space-x-2">
-                <span class="thai-text">{{ word.thai }}</span>
-                <span class="text-sm text-gray-500">[{{ word.pronunciation }}]</span>
-                <span class="text-sm text-gray-600">({{ word.type }})</span>
+              <div class="text-base font-medium text-gray-800">
+                <span class="thai-text">{{ word.thai }}</span> <span class="text-sm text-gray-500 font-normal">[{{ word.pronunciation }}]</span>
               </div>
-              <div class="text-sm text-gray-500 mt-1">{{ word.chinese }}</div>
-              <div class="mt-2 text-sm text-gray-700 whitespace-pre-line leading-none">
-                <p class="thai-text">{{ word.example_thai }}</p>
-                <p>{{ word.example_chinese }}</p>
+              <div class="text-sm text-gray-500 mt-1">{{ word.chinese }} <span class="text-sm text-gray-400">（{{ word.type }}）</span></div>
+              <div class="mt-2 text-sm text-gray-700 leading-normal">
+                <div class="thai-text">{{ word.example_thai }}</div>
+                <div>{{ word.example_chinese }}</div>
               </div>
             </a>
             {% endfor %}
