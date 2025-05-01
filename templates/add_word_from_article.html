@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章詳情</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&family=Jin+Xuan&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-color: #FCD34D;          /* 亮黃主色 */
+      --main-color-hover: #FBBF24;    /* hover 金橘色 */
+      --main-color-light: #FFFDEA;    /* 背景淺黃白 */
+      --main-color-light-hover: #FEF3C7;
+      --main-color-bg: #ffffff;
+      --main-color-dark: #1F2937;     /* 深灰文字 */
+      --main-color-darker: #111827;
+    }
+    body {
+      font-family: 'Noto Sans TC', 'Sarabun', sans-serif;
+      background-color: #F5F5F4;
+    }
+    .thai-text {
+      font-family: 'Sarabun', sans-serif;
+    }
+    .gradient-bg {
+      background-color: var(--main-color);
+      color: var(--main-color-dark);
+    }
+    .active-category {
+      background-color: var(--main-color) !important;
+      color: white !important;
+    }
+    .nav-title {
+      font-family: 'Jin Xuan', '金萱體', 'Noto Sans TC', sans-serif;
+      font-weight: bold;
+    }
+    .nav-subtitle {
+      font-family: 'Times New Roman', serif;
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+    .word-tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+      z-index: 1000;
+      max-width: 90vw;
+      min-width: 160px;
+      white-space: normal;
+      overflow-wrap: break-word;
+      transform: translateX(-50%);
+    }
+    .inline-word {
+      cursor: pointer;
+      border-bottom: 1px dashed #ccc;
+    }
+    .inline-word:hover {
+      background-color: #fef9c3;
+    }
+  </style>
+</head>
+<body>
+  <!-- 導覽欄 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <a href="/" class="flex items-end space-x-2">
+            <span class="nav-title text-2xl font-bold text-black">泰文學習平台</span>
+            <span class="nav-subtitle text-2xl text-black/80 self-end">Thai Learning</span>
+          </a>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="tab-btn active-tab text-black hover:text-gray-700" data-tab="articles">文章列表</a>
+          <a href="/vocabulary" class="text-black hover:text-gray-700">單字庫</a>
+          <a href="/grammar" class="text-black hover:text-gray-700">文法庫</a>
+          <!-- <a href="#" class="tab-btn" data-tab="admin">管理介面</a> -->
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-black hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden pb-4" style="display: none;">
+      <a href="/" class="block py-2 px-4 text-black hover:text-gray-700">文章列表</a>
+      <a href="/vocabulary" class="block py-2 px-4 text-black hover:text-gray-700">單字庫</a>
+      <a href="/grammar" class="block py-2 px-4 text-black hover:text-gray-700">文法庫</a>
+    </div>
+  </nav>
+  
+  <div class="px-4 py-8">
+    <div class="mb-4">
+      <a href="/" class="text-[#B45309] hover:underline text-lg">&larr; 返回文章列表</a>
+    </div>
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="gradient-bg p-6 text-white">
+        <h1 class="text-3xl font-bold mb-2 text-[#1F2937]">
+          <span class="thai-text block">{{ article.title }}</span>
+          <span class="text-xl font-normal">{{ article.chineseTitle }}</span>
+        </h1>
+        <p class="text-[#4B5563]">{{ article.createdAt[:10] }}</p>
+        <p class="mt-2 text-sm text-[#5C4033]">
+          Source: 
+          <a href="{{ article.url }}" target="_blank" class="underline">{{ article.url }}</a>
+        </p>
+      </div>
+      <div class="p-6 flex flex-col md:flex-row gap-6">
+        <!-- 左側：文章內容與單字表、文法 -->
+        <div class="md:w-2/3">
+          <!-- 兩欄：泰文原文、中文翻譯 -->
+          <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 泰文原文 -->
+            <div>
+              <h2 class="text-xl font-semibold mb-4">泰文原文</h2>
+              <div class="thai-text text-gray-800 leading-relaxed whitespace-pre-line">
+                {{ article.content | safe }}
+              </div>
+            </div>
+            <!-- 中文翻譯 -->
+            <div>
+              <h2 class="text-xl font-semibold mb-4">中文翻譯</h2>
+              <div class="text-gray-800 leading-relaxed whitespace-pre-line">
+                {{ article.chineseContent }}
+              </div>
+            </div>
+          </div>
+          <!-- 單字卡片下方獨立區塊 -->
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">單字表</h2>
+            {% if words %}
+              <div class="grid gap-3 grid-cols-1 md:grid-cols-2">
+                {% for word in words %}
+                <div class="relative group">
+                  <a href="/word/{{ word.id }}" class="block bg-white rounded-md shadow p-3 hover:shadow-lg transition-shadow duration-200">
+                    <div class="text-base font-medium text-gray-800">
+                      <span class="thai-text">{{ word.thai }}</span> <span class="text-sm text-gray-500 font-normal">[{{ word.pronunciation }}]</span>
+                    </div>
+                    <div class="text-sm text-gray-500 mt-1">{{ word.chinese }} <span class="text-sm text-gray-400">（{{ word.type }}）</span></div>
+                    <div class="mt-2 text-sm text-gray-700 leading-normal">
+                      <div class="thai-text">{{ word.example_thai }}</div>
+                      <div>{{ word.example_chinese }}</div>
+                    </div>
+                  </a>
+                  <form method="POST" action="/word/{{ word.id }}/delete-from-article/{{ article.id }}" class="absolute top-2 right-2 hidden group-hover:block">
+                    <button type="submit" class="text-sm">🗑️</button>
+                  </form>
+                </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+                尚無單字資料。
+              </div>
+            {% endif %}
+          </div>
+          <!-- 句型與文法 -->
+          <div class="mb-0">
+            <h2 class="text-xl font-semibold mb-4">句型與文法</h2>
+            {% if grammars %}
+              <div class="space-y-4">
+                {% for grammar in grammars %}
+                  <a href="/grammar/{{ grammar.id }}" class="block bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-lg font-semibold mb-1">{{ grammar.title }}</h3>
+                    <p class="text-gray-700 mb-3">{{ grammar.explanation }}</p>
+                    {% if grammar.examples %}
+                      <div class="space-y-2">
+                        {% for ex in grammar.examples %}
+                          <div class="bg-gray-50 p-3 rounded-md">
+                            <p class="thai-text mb-1">{{ ex.thai }}</p>
+                            <p>{{ ex.chinese }}</p>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </a>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+                尚無文法資料。
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <!-- 右側：新增單字表單 -->
+        <div class="md:w-1/3">
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 md:sticky md:top-8">
+            <h2 class="text-xl font-semibold mb-4">➕ 新增單字</h2>
+            <form method="POST">
+              <input type="hidden" name="article_id" value="{{ article.id }}">
+              <div class="grid grid-cols-1 gap-3">
+                <div>
+                  <label class="block font-medium mb-1">泰文單字</label>
+                  <input name="thai" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <div>
+                  <label class="block font-medium mb-1">中文意思</label>
+                  <input name="chinese" class="w-full border rounded px-3 py-2">
+                </div>
+                <div>
+                  <label class="block font-medium mb-1">詞性</label>
+                  <input name="type" class="w-full border rounded px-3 py-2">
+                </div>
+                <div>
+                  <label class="block font-medium mb-1">發音</label>
+                  <input name="pronunciation" class="w-full border rounded px-3 py-2">
+                </div>
+                <div>
+                  <label class="block font-medium mb-1">例句（泰文）</label>
+                  <textarea name="example_thai" rows="2" class="w-full border rounded px-3 py-2"></textarea>
+                </div>
+                <div>
+                  <label class="block font-medium mb-1">例句（中文）</label>
+                  <textarea name="example_chinese" rows="2" class="w-full border rounded px-3 py-2"></textarea>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button type="submit" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 rounded text-black font-semibold w-full">儲存單字</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script> 
+    document.addEventListener("DOMContentLoaded", function () {
+      // 行動選單按鈕
+      const menuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener("click", function () {
+          mobileMenu.style.display = (mobileMenu.style.display === "none" || mobileMenu.style.display === "") ? "block" : "none";
+        });
+      }
+
+      // 單字 tooltip 資料
+      const wordData = JSON.parse('{{ words | tojson | safe }}');
+      const wordMap = {};
+      wordData.forEach(word => {
+        wordMap[word.thai] = {
+          type: word.type,
+          chinese: word.chinese,
+          url: `/word/${word.id}`,
+          pronunciation: word.pronunciation
+        };
+      });
+
+      document.querySelectorAll(".inline-word").forEach(span => {
+        span.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const existing = document.querySelector(".word-tooltip");
+          if (existing) existing.remove();
+
+          const thai = span.dataset.word;
+          const info = wordMap[thai];
+          if (!info) return;
+
+          const tooltip = document.createElement("div");
+          tooltip.className = "word-tooltip";
+          tooltip.innerHTML = `
+            <div class="text-sm leading-snug">
+              <div class="thai-text text-base font-medium mb-1">${thai} <span class="text-sm text-gray-500">[${info.pronunciation}]</span></div>
+              <div class="text-gray-800">${info.chinese} <span class="text-sm text-gray-500">（${info.type}）</span></div>
+            </div>
+          `;
+          document.body.appendChild(tooltip);
+
+          const rect = span.getBoundingClientRect();
+          let left = window.scrollX + rect.left + rect.width / 2;
+          let top = window.scrollY + rect.bottom + 5;
+          tooltip.style.top = `${top}px`;
+          tooltip.style.left = `${left}px`;
+
+          // 防止突出去左右
+          requestAnimationFrame(() => {
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const vw = window.innerWidth;
+
+            if (tooltipRect.left < 8) {
+              tooltip.style.left = `${8 + window.scrollX}px`;
+              tooltip.style.transform = 'none';
+            } else if (tooltipRect.right > vw - 8) {
+              tooltip.style.left = `${vw - tooltipRect.width - 8 + window.scrollX}px`;
+              tooltip.style.transform = 'none';
+            }
+          });
+
+          const removeTooltip = () => {
+            tooltip.remove();
+            document.removeEventListener("click", removeTooltip);
+          };
+          setTimeout(() => document.addEventListener("click", removeTooltip), 10);
+
+          // 自動消失
+          setTimeout(() => tooltip.remove(), 5000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

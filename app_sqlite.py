@@ -90,9 +90,12 @@ def article_detail(article_id):
     if article and article['status'] == 'published':
         article = dict(article)
         content = article['content']
+        replaced_set = set()
         for word in words:
-            word_tag = f'<span class="inline-word" data-word="{word["thai"]}" data-id="{word["id"]}">{word["thai"]}</span>'
-            content = content.replace(word['thai'], word_tag)
+            if word["thai"] not in replaced_set:
+                word_tag = f'<span class="inline-word" data-word="{word["thai"]}" data-id="{word["id"]}">{word["thai"]}</span>'
+                content = content.replace(word["thai"], word_tag, 1)
+                replaced_set.add(word["thai"])
         article['content'] = content
 
         return render_template(
@@ -146,6 +149,7 @@ def word_detail(word_id):
 from flask import request, redirect, url_for
 from datetime import datetime
 
+
 @app.route('/word/<int:word_id>/edit', methods=['GET', 'POST'])
 def edit_word(word_id):
     conn = get_db_connection()
@@ -178,6 +182,82 @@ def edit_word(word_id):
 
     conn.close()
     return render_template('edit_word.html', word=word, examples=examples)
+
+# 新增：從文章頁新增單字與例句
+@app.route('/article/<int:article_id>/add_word', methods=['GET', 'POST'])
+def add_word_from_article(article_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # 取得文章內容
+    article = conn.execute('SELECT * FROM Article WHERE id = ?', (article_id,)).fetchone()
+
+    if request.method == 'POST':
+        thai = request.form['thai'].strip()
+        chinese = request.form.get('chinese', '').strip()
+        word_type = request.form.get('type', '').strip()
+        pronunciation = request.form.get('pronunciation', '').strip()
+        example_thai = request.form.get('example_thai', '').strip()
+        example_chinese = request.form.get('example_chinese', '').strip()
+        now = datetime.now().isoformat()
+
+        # 插入 Word 資料
+        cursor.execute('''
+            INSERT INTO Word (thai, chinese, type, pronunciation, articleId, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (thai, chinese, word_type, pronunciation, article_id, now, now))
+        word_id = cursor.lastrowid
+
+        # 建立 Word 與 Article 的對應關係
+        cursor.execute('''
+            INSERT INTO WordArticle (wordId, articleId)
+            VALUES (?, ?)
+        ''', (word_id, article_id))
+
+        # 插入例句（若有）
+        if example_thai and example_chinese:
+            cursor.execute('''
+                INSERT INTO WordExample (wordId, thai, chinese, articleId, createdAt, updatedAt)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (word_id, example_thai, example_chinese, article_id, now, now))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('add_word_from_article', article_id=article_id))
+
+    # 取得該文章已存在的單字與例句
+    words = conn.execute('''
+        SELECT Word.* FROM Word
+        JOIN WordArticle ON Word.id = WordArticle.wordId
+        WHERE WordArticle.articleId = ?
+    ''', (article_id,)).fetchall()
+    words = [dict(row) for row in words]
+    for word in words:
+        example = conn.execute('''
+            SELECT thai, chinese FROM WordExample
+            WHERE wordId = ? AND articleId = ?
+            ORDER BY createdAt DESC LIMIT 1
+        ''', (word['id'], article_id)).fetchone()
+        if example:
+            word['example_thai'] = example['thai']
+            word['example_chinese'] = example['chinese']
+        else:
+            word['example_thai'] = ''
+            word['example_chinese'] = ''
+
+    # 讓文章內容中的單字變成可互動的 span
+    article = dict(article)
+    content = article['content']
+    replaced_set = set()
+    for word in words:
+        if word["thai"] not in replaced_set:
+            word_tag = f'<span class="inline-word" data-word="{word["thai"]}" data-id="{word["id"]}">{word["thai"]}</span>'
+            content = content.replace(word["thai"], word_tag, 1)
+            replaced_set.add(word["thai"])
+    article['content'] = content
+
+    conn.close()
+    return render_template('add_word_from_article.html', article=article, words=words)
 
 @app.route('/grammar')
 def grammar():
@@ -333,6 +413,25 @@ def edit_article(article_id):
     article = conn.execute("SELECT * FROM Article WHERE id = ?", (article_id,)).fetchone()
     conn.close()
     return render_template("edit_article.html", article=article)
+
+@app.route('/word/<int:word_id>/delete-from-article/<int:article_id>', methods=['POST'])
+def delete_word_from_article(word_id, article_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # 刪除 WordExample（該 word 在此文章中的例句）
+    cursor.execute('DELETE FROM WordExample WHERE wordId = ? AND articleId = ?', (word_id, article_id))
+
+    # 刪除 WordArticle 關聯
+    cursor.execute('DELETE FROM WordArticle WHERE wordId = ? AND articleId = ?', (word_id, article_id))
+
+    # 刪除 Word 本體
+    cursor.execute('DELETE FROM Word WHERE id = ?', (word_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('add_word_from_article', article_id=article_id))
 
 # 狀態切換路由
 @app.route('/admin/toggle-status/<int:article_id>', methods=['POST'])
