@@ -455,7 +455,6 @@ def toggle_status(article_id):
 def ads_txt():
     return "google.com, pub-7245647492359616, DIRECT, f08c47fec0942fa0"
 
-# sitemap.xml route
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap():
     from flask import Response
@@ -463,11 +462,19 @@ def sitemap():
 
     conn = get_db_connection()
     articles = conn.execute('SELECT id, updatedAt FROM Article WHERE status = "published"').fetchall()
+    words = conn.execute('SELECT id, updatedAt FROM Word').fetchall()
+    grammars = conn.execute('SELECT id, updatedAt FROM GrammarPoint').fetchall()
     conn.close()
 
     base_url = "https://thai-learning-platform.onrender.com"
     pages = [{
         "loc": f"{base_url}/",
+        "lastmod": datetime.now().date().isoformat()
+    }, {
+        "loc": f"{base_url}/vocabulary",
+        "lastmod": datetime.now().date().isoformat()
+    }, {
+        "loc": f"{base_url}/grammar",
         "lastmod": datetime.now().date().isoformat()
     }]
 
@@ -475,6 +482,18 @@ def sitemap():
         pages.append({
             "loc": f"{base_url}/article/{article['id']}",
             "lastmod": article['updatedAt'][:10] if article['updatedAt'] else datetime.now().date().isoformat()
+        })
+
+    for word in words:
+        pages.append({
+            "loc": f"{base_url}/word/{word['id']}",
+            "lastmod": word['updatedAt'][:10] if word['updatedAt'] else datetime.now().date().isoformat()
+        })
+
+    for g in grammars:
+        pages.append({
+            "loc": f"{base_url}/grammar/{g['id']}",
+            "lastmod": g['updatedAt'][:10] if g['updatedAt'] else datetime.now().date().isoformat()
         })
 
     xml = ['<?xml version="1.0" encoding="UTF-8"?>']
