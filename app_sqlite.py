@@ -42,6 +42,17 @@ def index():
 
 @app.route('/article/<int:article_id>')
 def article_detail(article_id):
+    import re
+    def highlight_words_in_content(content, words):
+        def replacer(match):
+            word = match.group(0)
+            return f'<span class="inline-word" data-word="{word}">{word}</span>'
+        for word in words:
+            thai = re.escape(word["thai"])
+            pattern = re.compile(rf'(?<![>\w])({thai})(?![^<]*?>)')
+            content = pattern.sub(replacer, content)
+        return content
+
     conn = get_db_connection()
 
     article = conn.execute('SELECT * FROM Article WHERE id = ?', (article_id,)).fetchone()
@@ -89,14 +100,7 @@ def article_detail(article_id):
 
     if article and article['status'] == 'published':
         article = dict(article)
-        content = article['content']
-        replaced_set = set()
-        for word in words:
-            if word["thai"] not in replaced_set:
-                word_tag = f'<span class="inline-word" data-word="{word["thai"]}" data-id="{word["id"]}">{word["thai"]}</span>'
-                content = content.replace(word["thai"], word_tag, 1)
-                replaced_set.add(word["thai"])
-        article['content'] = content
+        article['content'] = highlight_words_in_content(article['content'], words)
 
         return render_template(
             'article_detail_adjust_ver2.html',
