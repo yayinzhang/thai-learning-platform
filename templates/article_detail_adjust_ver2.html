@@ -92,82 +92,86 @@
       </div>
     </div>
     </div>
+    <!-- 單字資料區段，供 JS 存取 -->
+    <script id="word-data" type="application/json">
+      {{ words | tojson | safe }}
+    </script>
   </div>
 {% endblock %}
 {% block script %}
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // 行動選單按鈕
-      const menuBtn = document.getElementById("mobile-menu-btn");
-      const mobileMenu = document.getElementById("mobile-menu");
-      if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener("click", function () {
-          mobileMenu.style.display = (mobileMenu.style.display === "none" || mobileMenu.style.display === "") ? "block" : "none";
-        });
-      }
-
-      // 單字 tooltip 資料
-      const wordData = JSON.parse('{{ words | tojson | safe }}');
-      const wordMap = {};
-      wordData.forEach(word => {
-        wordMap[word.thai] = {
-          type: word.type,
-          chinese: word.chinese,
-          url: `/word/${word.id}`,
-          pronunciation: word.pronunciation
-        };
+  document.addEventListener("DOMContentLoaded", function () {
+    // 行動選單按鈕
+    const menuBtn = document.getElementById("mobile-menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener("click", function () {
+        mobileMenu.style.display = (mobileMenu.style.display === "none" || mobileMenu.style.display === "") ? "block" : "none";
       });
+    }
 
-      document.querySelectorAll(".inline-word").forEach(span => {
-        span.addEventListener("click", function (e) {
-          e.stopPropagation();
-          const existing = document.querySelector(".word-tooltip");
-          if (existing) existing.remove();
+    // 單字 tooltip 資料
+    const wordData = JSON.parse('{{ words | tojson | safe }}');
+    const wordMap = {};
+    wordData.forEach(word => {
+      wordMap[word.thai] = {
+        type: word.type,
+        chinese: word.chinese,
+        url: `/word/${word.id}`,
+        pronunciation: word.pronunciation
+      };
+    });
 
-          const thai = span.dataset.word;
-          const info = wordMap[thai];
-          if (!info) return;
+    document.querySelectorAll(".inline-word").forEach(span => {
+      span.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const existing = document.querySelector(".word-tooltip");
+        if (existing) existing.remove();
 
-          const tooltip = document.createElement("div");
-          tooltip.className = "word-tooltip";
-          tooltip.innerHTML = `
-            <div class="text-sm leading-snug">
-              <div class="thai-text text-base font-medium mb-1">${thai} <span class="text-sm text-gray-500">[${info.pronunciation}]</span></div>
-              <div class="text-gray-800">${info.chinese} <span class="text-sm text-gray-500">（${info.type}）</span></div>
-            </div>
-          `;
-          document.body.appendChild(tooltip);
+        const thai = span.dataset.word;
+        const info = wordMap[thai];
+        if (!info) return;
 
-          const rect = span.getBoundingClientRect();
-          let left = window.scrollX + rect.left + rect.width / 2;
-          let top = window.scrollY + rect.bottom + 5;
-          tooltip.style.top = `${top}px`;
-          tooltip.style.left = `${left}px`;
+        const tooltip = document.createElement("div");
+        tooltip.className = "word-tooltip";
+        tooltip.innerHTML = `
+          <div class="text-sm leading-snug">
+            <div class="thai-text text-base font-medium mb-1">${thai} <span class="text-sm text-gray-500">[${info.pronunciation}]</span></div>
+            <div class="text-gray-800">${info.chinese} <span class="text-sm text-gray-500">（${info.type}）</span></div>
+          </div>
+        `;
+        document.body.appendChild(tooltip);
 
-          // 防止突出去左右
-          requestAnimationFrame(() => {
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const vw = window.innerWidth;
+        const rect = span.getBoundingClientRect();
+        let left = window.scrollX + rect.left + rect.width / 2;
+        let top = window.scrollY + rect.bottom + 5;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
 
-            if (tooltipRect.left < 8) {
-              tooltip.style.left = `${8 + window.scrollX}px`;
-              tooltip.style.transform = 'none';
-            } else if (tooltipRect.right > vw - 8) {
-              tooltip.style.left = `${vw - tooltipRect.width - 8 + window.scrollX}px`;
-              tooltip.style.transform = 'none';
-            }
-          });
+        // 防止突出去左右
+        requestAnimationFrame(() => {
+          const tooltipRect = tooltip.getBoundingClientRect();
+          const vw = window.innerWidth;
 
-          const removeTooltip = () => {
-            tooltip.remove();
-            document.removeEventListener("click", removeTooltip);
-          };
-          setTimeout(() => document.addEventListener("click", removeTooltip), 10);
-
-          // 自動消失
-          setTimeout(() => tooltip.remove(), 5000);
+          if (tooltipRect.left < 8) {
+            tooltip.style.left = `${8 + window.scrollX}px`;
+            tooltip.style.transform = 'none';
+          } else if (tooltipRect.right > vw - 8) {
+            tooltip.style.left = `${vw - tooltipRect.width - 8 + window.scrollX}px`;
+            tooltip.style.transform = 'none';
+          }
         });
+
+        const removeTooltip = () => {
+          tooltip.remove();
+          document.removeEventListener("click", removeTooltip);
+        };
+        setTimeout(() => document.addEventListener("click", removeTooltip), 10);
+
+        // 自動消失
+        setTimeout(() => tooltip.remove(), 5000);
       });
     });
-  </script>
+  });
+</script>
 {% endblock %}

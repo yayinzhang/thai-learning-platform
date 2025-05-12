@@ -47,6 +47,29 @@
       font-size: 1.5rem;
       line-height: 2rem;
     }
+    .inline-word {
+      cursor: pointer;
+      border-bottom: 1px dashed #ccc;
+    }
+    .inline-word:hover {
+      background-color: #fef9c3;
+    }
+    .word-tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+      z-index: 1000;
+      white-space: normal;
+      overflow-wrap: break-word;
+      transform: translateX(-50%);
+      max-width: 90vw;
+      min-width: 160px;
+
+    }
   </style>
 </head>
 <body>
@@ -82,7 +105,8 @@
     </div>
   </nav>
 
-{% block content %}{% endblock %}
+
+  {% block content %}{% endblock %}
 
   <!-- 懸浮底部廣告 -->
   <div style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: #fff; text-align: center; padding: 10px 0; box-shadow: 0 -2px 6px rgba(0,0,0,0.1);">
@@ -96,6 +120,70 @@
          (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
   </div>
+
+  {% block script %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const wordDataTag = document.getElementById("word-data");
+      if (!wordDataTag) return;
+
+      const wordData = JSON.parse(wordDataTag.textContent);
+      const wordMap = {};
+      wordData.forEach(word => {
+        wordMap[word.thai] = {
+          type: word.type,
+          chinese: word.chinese,
+          url: `/word/${word.id}`,
+          pronunciation: word.pronunciation
+        };
+      });
+
+      document.querySelectorAll(".inline-word").forEach(span => {
+        span.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const existing = document.querySelector(".word-tooltip");
+          if (existing) existing.remove();
+
+          const thai = span.dataset.word;
+          const info = wordMap[thai];
+          if (!info) return;
+
+          const tooltip = document.createElement("div");
+          tooltip.className = "word-tooltip";
+          tooltip.innerHTML = `
+            <div class="thai-text text-base font-medium">${thai} <span class="text-sm text-gray-500">[${info.pronunciation}]</span> <span class="text-sm text-gray-600">(${info.type})</span> ${info.chinese}</div>
+          `;
+          document.body.appendChild(tooltip);
+
+          const rect = span.getBoundingClientRect();
+          const left = window.scrollX + rect.left + rect.width / 2;
+          const top = window.scrollY + rect.bottom + 5;
+          tooltip.style.top = `${top}px`;
+          tooltip.style.left = `${left}px`;
+
+          requestAnimationFrame(() => {
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const vw = window.innerWidth;
+            if (tooltipRect.left < 8) {
+              tooltip.style.left = `${8 + window.scrollX}px`;
+              tooltip.style.transform = 'none';
+            } else if (tooltipRect.right > vw - 8) {
+              tooltip.style.left = `${vw - tooltipRect.width - 8 + window.scrollX}px`;
+              tooltip.style.transform = 'none';
+            }
+          });
+
+          const removeTooltip = () => {
+            tooltip.remove();
+            document.removeEventListener("click", removeTooltip);
+          };
+          setTimeout(() => document.addEventListener("click", removeTooltip), 10);
+          setTimeout(() => tooltip.remove(), 5000);
+        });
+      });
+    });
+  </script>
+  {% endblock %}
 </body>
 
 <script>
