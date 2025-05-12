@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}文章詳情{% endblock %}
 {% block content %}
-  
   <div class="px-4 py-8">
     <div class="mb-4">
       <a href="/" class="text-[#B45309] hover:underline text-lg">&larr; 返回文章列表</a>
@@ -94,8 +93,9 @@
     </div>
     </div>
   </div>
-  </div>
-  <script>
+{% endblock %}
+{% block script %}
+<script>
     document.addEventListener("DOMContentLoaded", function () {
       // 行動選單按鈕
       const menuBtn = document.getElementById("mobile-menu-btn");
