@@ -455,5 +455,40 @@ def toggle_status(article_id):
 def ads_txt():
     return "google.com, pub-7245647492359616, DIRECT, f08c47fec0942fa0"
 
+# sitemap.xml route
+@app.route('/sitemap.xml', methods=['GET'])
+def sitemap():
+    from flask import Response
+    from datetime import datetime
+
+    conn = get_db_connection()
+    articles = conn.execute('SELECT id, updatedAt FROM Article WHERE status = "published"').fetchall()
+    conn.close()
+
+    base_url = "https://thai-learning-platform.onrender.com"
+    pages = [{
+        "loc": f"{base_url}/",
+        "lastmod": datetime.now().date().isoformat()
+    }]
+
+    for article in articles:
+        pages.append({
+            "loc": f"{base_url}/article/{article['id']}",
+            "lastmod": article['updatedAt'][:10] if article['updatedAt'] else datetime.now().date().isoformat()
+        })
+
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+
+    for page in pages:
+        xml.append("  <url>")
+        xml.append(f"    <loc>{page['loc']}</loc>")
+        xml.append(f"    <lastmod>{page['lastmod']}</lastmod>")
+        xml.append("  </url>")
+
+    xml.append("</urlset>")
+    sitemap_xml = "\n".join(xml)
+    return Response(sitemap_xml, mimetype='application/xml')
+
 if __name__ == "__main__":
     app.run(debug=True, port=5050)
