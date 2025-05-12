@@ -1,86 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>泰語學習平台</title>
-  
-  <!-- Google AdSense 載入碼 -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7245647492359616"
-     crossorigin="anonymous"></script>
-     
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sarabun:wght@400;500;700&family=Jin+Xuan&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --main-color: #FCD34D;          /* 亮黃主色 */
-      --main-color-hover: #FBBF24;    /* hover 金橘色 */
-      --main-color-light: #FFFDEA;    /* 背景淺黃白 */
-      --main-color-light-hover: #FEF3C7;
-      --main-color-bg: #ffffff;
-      --main-color-dark: #1F2937;     /* 深灰文字 */
-      --main-color-darker: #111827;
-    }
-    body {
-      font-family: 'Noto Sans TC', 'Sarabun', sans-serif;
-      background-color: #F5F5F4;
-    }
-    .thai-text {
-      font-family: 'Sarabun', sans-serif;
-    }
-    .gradient-bg {
-      background-color: var(--main-color);
-      color: var(--main-color-dark);
-    }
-    .active-category {
-      background-color: var(--main-color) !important;
-      color: white !important;
-    }
-    .nav-title {
-      font-family: 'Jin Xuan', '金萱體', 'Noto Sans TC', sans-serif;
-      font-weight: bold;
-    }
-    .nav-subtitle {
-      font-family: 'Times New Roman', serif;
-      font-size: 1.5rem;
-      line-height: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <!-- 導覽欄 -->
-  <nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-4">
-      <div class="flex justify-between items-center py-4">
-        <div class="flex items-center space-x-2">
-          <a href="/" class="flex items-end space-x-2">
-            <span class="nav-title text-2xl font-bold text-black">泰文學習平台</span>
-            <span class="nav-subtitle text-2xl text-black/80">Thai Learning</span>
-          </a>
-        </div>
-        <div class="hidden md:flex space-x-6">
-          <a href="/" class="tab-btn active-tab text-black hover:text-gray-700" data-tab="articles">文章列表</a>
-          <a href="/vocabulary" class="text-black hover:text-gray-700">單字庫</a>
-          <a href="/grammar" class="text-black hover:text-gray-700">文法庫</a>
-          <!-- <a href="#" class="tab-btn" data-tab="admin">管理介面</a> -->
-        </div>
-        <div class="md:hidden">
-          <button id="mobile-menu-btn" class="text-black hover:text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16M4 8h16M4 12h16M4 16h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="mobile-menu" class="md:hidden pb-4 hidden">
-      <a href="/" class="block py-2 px-4 text-black hover:text-gray-700">文章列表</a>
-      <a href="/vocabulary" class="block py-2 px-4 text-black hover:text-gray-700">單字庫</a>
-      <a href="/grammar" class="block py-2 px-4 text-black hover:text-gray-700">文法庫</a>
-    </div>
-  </nav>
+{% extends "base.html" %}
+{% block title %}首頁{% endblock %}
+{% block content %}
 
 <!-- 主要內容區 -->
 <div class="container mx-auto px-4 py-8">
@@ -140,32 +60,8 @@
   </div>
 </div>
 
-
-  <!-- 懸浮底部廣告 -->
-  <div style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: #fff; text-align: center; padding: 10px 0; box-shadow: 0 -2px 6px rgba(0,0,0,0.1);">
-    <ins class="adsbygoogle"
-         style="display:block; text-align:center;"
-         data-ad-client="ca-pub-7245647492359616"
-         data-ad-slot="4317518533"
-         data-ad-format="horizontal"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
-</body>
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const menuBtn = document.getElementById("mobile-menu-btn");
-    const menu = document.getElementById("mobile-menu");
-
-    if (menuBtn && menu) {
-      menuBtn.addEventListener("click", function () {
-        menu.classList.toggle("hidden");
-      });
-    }
-
     const articleCards = document.querySelectorAll(".article-card");
     const mainButtons = document.querySelectorAll(".main-category-btn");
     const subButtons = document.querySelectorAll(".sub-category-btn");
@@ -204,4 +100,4 @@
   });
 </script>
 
-</html>
+{% endblock %}
