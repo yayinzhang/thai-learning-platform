@@ -445,5 +445,11 @@ def toggle_status(article_id):
     conn.close()
     return redirect('/admin')
 
+
+# /ads.txt route for AdSense verification
+@app.route('/ads.txt')
+def ads_txt():
+    return "google.com, pub-7245647492359616, DIRECT, f08c47fec0942fa0"
+
 if __name__ == "__main__":
     app.run(debug=True, port=5050)
