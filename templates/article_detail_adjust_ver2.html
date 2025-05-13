@@ -1,102 +1,129 @@
 {% extends "base.html" %}
 {% block title %}文章詳情{% endblock %}
 {% block content %}
-  <div class="px-4 py-8">
-    <div class="mb-4">
-      <a href="/" class="text-[#B45309] hover:underline text-lg">&larr; 返回文章列表</a>
-    </div>
-    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="gradient-bg p-6 text-white">
-      <h1 class="text-3xl font-bold mb-2 text-[#1F2937]">
-        <span class="thai-text block">{{ article.title }}</span>
-       <span class="text-xl font-normal">{{ article.chineseTitle }}</span>
-      </h1>
-      <p class="text-[#4B5563]">{{ article.createdAt[:10] }}</p>
-      <p class="mt-2 text-sm text-[#5C4033]">
-        Source: 
-        <a href="{{ article.url }}" target="_blank" class="underline">{{ article.url }}</a>
-      </p>
+  <div class="flex justify-center px-4 py-8 gap-4">
+    <!-- 左側廣告 -->
+    <div class="hidden md:block w-1/8">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-7245647492359616"
+           data-ad-slot="1234567890"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
     </div>
 
-    <div class="p-6">
-      <!-- 兩欄：泰文原文、中文翻譯 -->
-      <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- 泰文原文 -->
-        <div>
-          <h2 class="text-xl font-semibold mb-4">泰文原文</h2>
-          <div class="thai-text text-gray-800 leading-relaxed whitespace-pre-line">
-            {{ article.content | safe }}
+    <!-- 主內容 -->
+    <div class="w-full md:w-3/4">
+      <div class="mb-4">
+        <a href="/" class="text-[#B45309] hover:underline text-lg">&larr; 返回文章列表</a>
+      </div>
+      <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="gradient-bg p-6 text-white">
+        <h1 class="text-3xl font-bold mb-2 text-[#1F2937]">
+          <span class="thai-text block">{{ article.title }}</span>
+         <span class="text-xl font-normal">{{ article.chineseTitle }}</span>
+        </h1>
+        <p class="text-[#4B5563]">{{ article.createdAt[:10] }}</p>
+        <p class="mt-2 text-sm text-[#5C4033]">
+          Source: 
+          <a href="{{ article.url }}" target="_blank" class="underline">{{ article.url }}</a>
+        </p>
+      </div>
+
+      <div class="p-6">
+        <!-- 兩欄：泰文原文、中文翻譯 -->
+        <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- 泰文原文 -->
+          <div>
+            <h2 class="text-xl font-semibold mb-4">泰文原文</h2>
+            <div class="thai-text text-gray-800 leading-relaxed whitespace-pre-line">
+              {{ article.content | safe }}
+            </div>
+          </div>
+
+          <!-- 中文翻譯 -->
+          <div>
+            <h2 class="text-xl font-semibold mb-4">中文翻譯</h2>
+            <div class="text-gray-800 leading-relaxed whitespace-pre-line">
+              {{ article.chineseContent }}
+            </div>
           </div>
         </div>
 
-        <!-- 中文翻譯 -->
-        <div>
-          <h2 class="text-xl font-semibold mb-4">中文翻譯</h2>
-          <div class="text-gray-800 leading-relaxed whitespace-pre-line">
-            {{ article.chineseContent }}
-          </div>
-        </div>
-      </div>
-
-      <!-- 單字卡片下方獨立區塊 -->
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4">單字表</h2>
-        {% if words %}
-          <div class="grid gap-3 grid-cols-1 md:grid-cols-2">
-            {% for word in words %}
-            <a href="/word/{{ word.id }}" class="block bg-white rounded-md shadow p-3 hover:shadow-lg transition-shadow duration-200">
-              <div class="text-base font-medium text-gray-800">
-                <span class="thai-text">{{ word.thai }}</span> <span class="text-sm text-gray-500 font-normal">[{{ word.pronunciation }}]</span>
-              </div>
-              <div class="text-sm text-gray-500 mt-1">{{ word.chinese }} <span class="text-sm text-gray-400">（{{ word.type }}）</span></div>
-              <div class="mt-2 text-sm text-gray-700 leading-normal">
-                <div class="thai-text">{{ word.example_thai }}</div>
-                <div>{{ word.example_chinese }}</div>
-              </div>
-            </a>
-            {% endfor %}
-          </div>
-        {% else %}
-          <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
-            尚無單字資料。
-          </div>
-        {% endif %}
-      </div>
-
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4">句型與文法</h2>
-        {% if grammars %}
-          <div class="space-y-4">
-            {% for grammar in grammars %}
-              <a href="/grammar/{{ grammar.id }}" class="block bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                <h3 class="text-lg font-semibold mb-1">{{ grammar.title }}</h3>
-                <p class="text-gray-700 mb-3">{{ grammar.explanation }}</p>
-                {% if grammar.examples %}
-                  <div class="space-y-2">
-                    {% for ex in grammar.examples %}
-                      <div class="bg-gray-50 p-3 rounded-md">
-                        <p class="thai-text mb-1">{{ ex.thai }}</p>
-                        <p>{{ ex.chinese }}</p>
-                      </div>
-                    {% endfor %}
-                  </div>
-                {% endif %}
+        <!-- 單字卡片下方獨立區塊 -->
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold mb-4">單字表</h2>
+          {% if words %}
+            <div class="grid gap-3 grid-cols-1 md:grid-cols-2">
+              {% for word in words %}
+              <a href="/word/{{ word.id }}" class="block bg-white rounded-md shadow p-3 hover:shadow-lg transition-shadow duration-200">
+                <div class="text-base font-medium text-gray-800">
+                  <span class="thai-text">{{ word.thai }}</span> <span class="text-sm text-gray-500 font-normal">[{{ word.pronunciation }}]</span>
+                </div>
+                <div class="text-sm text-gray-500 mt-1">{{ word.chinese }} <span class="text-sm text-gray-400">（{{ word.type }}）</span></div>
+                <div class="mt-2 text-sm text-gray-700 leading-normal">
+                  <div class="thai-text">{{ word.example_thai }}</div>
+                  <div>{{ word.example_chinese }}</div>
+                </div>
               </a>
-            {% endfor %}
-          </div>
-        {% else %}
-          <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
-            尚無文法資料。
-          </div>
-        {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+              尚無單字資料。
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold mb-4">句型與文法</h2>
+          {% if grammars %}
+            <div class="space-y-4">
+              {% for grammar in grammars %}
+                <a href="/grammar/{{ grammar.id }}" class="block bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                  <h3 class="text-lg font-semibold mb-1">{{ grammar.title }}</h3>
+                  <p class="text-gray-700 mb-3">{{ grammar.explanation }}</p>
+                  {% if grammar.examples %}
+                    <div class="space-y-2">
+                      {% for ex in grammar.examples %}
+                        <div class="bg-gray-50 p-3 rounded-md">
+                          <p class="thai-text mb-1">{{ ex.thai }}</p>
+                          <p>{{ ex.chinese }}</p>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="bg-gray-50 rounded-lg p-4 text-gray-500">
+              尚無文法資料。
+            </div>
+          {% endif %}
+        </div>
       </div>
+      </div>
+      <!-- 單字資料區段，供 JS 存取 -->
+      <script id="word-data" type="application/json">
+        {{ words | tojson | safe }}
+      </script>
     </div>
+
+    <!-- 右側廣告 -->
+    <div class="hidden md:block w-1/8">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-7245647492359616"
+           data-ad-slot="0987654321"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
     </div>
-    <!-- 單字資料區段，供 JS 存取 -->
-    <script id="word-data" type="application/json">
-      {{ words | tojson | safe }}
-    </script>
   </div>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 {% endblock %}
 {% block script %}
 <script>
